@@ -17,12 +17,12 @@ a {
     color: #44a4cd;
 }
 
-a:hover{
+a:hover {
     color: #44a8cf;
 }
 
 .shadow {
-    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2), 0 5px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2), 0 5px 6px rgba(0,0,0,0.3);
 }
 
 .section-container {
