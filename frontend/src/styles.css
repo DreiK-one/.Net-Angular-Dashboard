@@ -29,6 +29,23 @@ a:hover {
     padding: 30px;
 }
 
+.cards {
+    display: flex;
+    flex-direction: column;
+}
+
+.pieChart {
+    width: 24%;
+    float: left;
+    margin-right: 25px;
+}
+
+.barChart {
+    width: 45%;
+    float: left;
+    margin-right: 25px;
+}
+
 .card-theme {
     background-color: #191F26;
     border: none;
@@ -44,11 +61,6 @@ a:hover {
 
 .card-body-theme {
     background-color: #494F56;
-}
-
-.cards {
-    display: flex;
-    flex-direction: column;
 }
 
 .section-container {
