@@ -1,4 +1,5 @@
 using backend.Data;
+using backend.Data.DataCreation;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,6 +19,8 @@ builder.Services.AddDbContext<ApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddTransient<DataSeed>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: defaultOrigins, builder =>
@@ -28,6 +31,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +40,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Services.GetService<DataSeed>()?.SeedData(20, 1000);
 
 app.UseHttpsRedirection();
 
