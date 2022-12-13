@@ -21,7 +21,7 @@ namespace backend.Data.DataCreation
 
             if (!_context.Orders.Any())
             {
-                SeedOrders(nCustomers);
+                SeedOrders(nOrders);
                 _context.SaveChanges();
             }
 
@@ -74,7 +74,6 @@ namespace backend.Data.DataCreation
 
                 customers.Add(new Customer
                 {
-                    Id = i,
                     Name = name,
                     Email = Helpers.MakeCustomerEmail(name),
                     State = Helpers.GetRandomState()
@@ -98,7 +97,6 @@ namespace backend.Data.DataCreation
 
                 orders.Add(new Order
                 {
-                    Id = i,
                     Customer = customers.First(c => c.Id == randCustomerId),
                     Total = Helpers.GetRandomOrderTotal(),
                     Placed = placed,
@@ -115,63 +113,54 @@ namespace backend.Data.DataCreation
             {
                 new Server
                 {
-                    Id = 1,
                     Name = "Dev-Web",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 2,
                     Name = "Dev-Analysis",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 3,
                     Name = "Dev-Mail",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 4,
                     Name = "QA-Web",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 5,
                     Name = "QA-Analysis",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 6,
                     Name = "QA-Mail",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 7,
                     Name = "Prod-Web",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 8,
                     Name = "Prod-Analysis",
                     IsOnline = true
                 },
 
                 new Server
                 {
-                    Id = 9,
                     Name = "Prod-Mail",
                     IsOnline = true
                 },

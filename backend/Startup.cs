@@ -30,8 +30,7 @@ namespace backend
                     b.WithOrigins("http://localhost:4200")
                     .AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
+                    .AllowAnyHeader();
                 });
             });
 
