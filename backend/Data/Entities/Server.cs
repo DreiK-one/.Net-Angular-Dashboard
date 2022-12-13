@@ -1,4 +1,6 @@
-﻿namespace backend.Data.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace backend.Data.Entities
 {
     public class Server
     {

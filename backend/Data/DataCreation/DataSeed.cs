@@ -29,12 +29,12 @@ namespace backend.Data.DataCreation
             {
                 SeedServers();
                 _context.SaveChanges();
-            }
+            } 
         }
 
         private void SeedCustomers(int number)
         {
-            List<Customer> customers = BuildCustmersList(number);
+            var customers = BuildCustomersList(number);
 
             foreach (var customer in customers)
             {
@@ -44,7 +44,7 @@ namespace backend.Data.DataCreation
 
         private void SeedOrders(int number)
         {
-            List<Order> orders = BuildOrderList(number);
+            var orders = BuildOrderList(number);
 
             foreach (var order in orders)
             {
@@ -62,12 +62,12 @@ namespace backend.Data.DataCreation
             }
         }
 
-        private List<Customer> BuildCustmersList(int nCustomers)
+        private List<Customer> BuildCustomersList(int nCustomers)
         {
             var customers = new List<Customer>();
             var names = new List<string>();
 
-            for(var i = 0; i <= nCustomers; i++)
+            for(var i = 1; i <= nCustomers; i++)
             {
                 var name = Helpers.MakeUniqueCustomerName(names);
                 names.Add(name);
@@ -89,7 +89,7 @@ namespace backend.Data.DataCreation
             var orders = new List<Order>();
             var rand = new Random();
 
-            for (var i = 0; i <= nOrders; i++)
+            for (var i = 1; i <= nOrders; i++)
             {
                 var randCustomerId = rand.Next(1, _context.Customers.Count());
                 var placed = Helpers.GetRandomOrderPlaced();
