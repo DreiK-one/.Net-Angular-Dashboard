@@ -1,5 +1,6 @@
 ﻿using backend.Data;
 using backend.Data.DataCreation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend
@@ -62,7 +63,9 @@ namespace backend
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "api/{controller}/{action}/{id?}");
             });
 
 
