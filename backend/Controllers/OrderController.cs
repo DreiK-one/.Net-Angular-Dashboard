@@ -74,7 +74,7 @@ namespace backend.Controllers
             return Ok(groupedResult);
         }
 
-        [HttpGet("GetOrder", Name = "GetOrder")]
+        [HttpGet("GetOrder/{id}", Name = "GetOrder")]
         public IActionResult GetOrder(int id)
         {
             var order = _context.Orders.Include(_o => _o.Customer)
