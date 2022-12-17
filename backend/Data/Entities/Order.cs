@@ -11,6 +11,6 @@ namespace backend.Data.Entities
         [Column(TypeName = "decimal(18,4)")]
         public decimal Total { get; set; }
         public DateTime Placed { get; set; }
-        public DateTime? Comleted { get; set; }
+        public DateTime? Completed { get; set; }
     }
 }

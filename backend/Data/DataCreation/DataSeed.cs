@@ -100,7 +100,7 @@ namespace backend.Data.DataCreation
                     Customer = customers.First(c => c.Id == randCustomerId),
                     Total = Helpers.GetRandomOrderTotal(),
                     Placed = placed,
-                    Comleted = completed
+                    Completed = completed
                 });
             }
 
