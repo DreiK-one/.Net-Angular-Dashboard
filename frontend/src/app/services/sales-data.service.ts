@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import 'rxjs/add/operator/map';
+import { map } from 'rxjs';
 
 
 @Injectable({
@@ -10,18 +10,21 @@ export class SalesDataService {
 
   constructor(private _http: HttpClient) { }
 
+
+//CHANGE LOCALHOST FROM 5000
+
   getOrders(pageIndex: number, pageSize: number) {
     return this._http.get('http://localhost:5000/api/order/' + pageIndex + '/' + pageSize)
-      .pipe();
+      .pipe(map(res => res || []));
   }
 
   getOrdersByCustomer(n: number) {
     return this._http.get('http://localhost:5000/api/order/bycustomer/' + n)
-      .pipe();
+      .pipe(map(res => res || []));
   }
 
   getOrdersByState() {
     return this._http.get('http://localhost:5000/api/order/bystate/')
-      .pipe();
+      .pipe(map(res => res || []));
   }
 }

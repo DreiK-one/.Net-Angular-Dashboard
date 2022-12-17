@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { S } from 'chart.js/dist/chunks/helpers.core';
 import { Order } from 'src/app/shared/order';
 import { SalesDataService } from '../../services/sales-data.service';
 
@@ -12,10 +13,11 @@ export class SectionOrdersComponent implements OnInit {
 
   constructor(private _salesData: SalesDataService) { }
 
-  orders: any;
+  orders?: Order[];
   total = 0;
   page = 1;
   limit = 10;
+  loading = false;
 
   ngOnInit() {
     this.getOrders();
@@ -24,8 +26,25 @@ export class SectionOrdersComponent implements OnInit {
   getOrders(): void {
     this._salesData.getOrders(this.page, this.limit)
       .subscribe(res => {
-        this.orders = res;
+        this.orders = (res as any)['page']['data'];
+        this.total = (res as any)['page'].total;
+        this.loading = false;
       });
+  }
+
+  goToPrevious(): void {
+    this.page--;
+    this.getOrders();
+  }
+
+  goToNext(): void {
+    this.page++;
+    this.getOrders();
+  }
+
+  goToPage(n: number): void {
+    this.page = n;
+    this.getOrders();
   }
 
 }
