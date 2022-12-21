@@ -20,6 +20,7 @@ import { ServerComponent } from './server/server.component';
 import { SalesDataService } from './services/sales-data.service';
 import { PaginationComponent } from './pagination/pagination.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,

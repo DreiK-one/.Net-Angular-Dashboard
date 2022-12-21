@@ -1,5 +1,6 @@
 import { ThemeColors } from './theme.colors.model';
 
+
 export const THEME_COLORS: ThemeColors[] = [
     {
         name: 'Default',

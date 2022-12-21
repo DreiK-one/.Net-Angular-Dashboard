@@ -2,7 +2,6 @@ import { Server } from './../shared/server';
 import { Component, OnInit, Input } from '@angular/core';
 
 
-
 @Component({
   selector: 'app-server',
   templateUrl: './server.component.html',

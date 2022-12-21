@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { S } from 'chart.js/dist/chunks/helpers.core';
 import { Order } from 'src/app/shared/order';
 import { SalesDataService } from '../../services/sales-data.service';
 
