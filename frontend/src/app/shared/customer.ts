@@ -1,4 +1,4 @@
-export interface Customer{
+export interface Customer {
     id: number,
     name: string,
     email: string,
