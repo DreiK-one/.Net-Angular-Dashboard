@@ -30,7 +30,7 @@ export class LineChartComponent implements OnInit {
       this._salesDataService.getOrdersByCustomer(3).subscribe(cus => {
         this.topCustomers = (cus as any).map((x: any) => x['name']);
 
-        const allChartData = this.topCustomers?.reduce((result: any, i: any) => {
+        const allChartData = this.topCustomers?.reduce((result: any, i) => {
           result.push(this.getChartData(this.allOrders, i));
           return result;
         }, []);
@@ -42,9 +42,9 @@ export class LineChartComponent implements OnInit {
 
         dates = [].concat.apply([], dates);
 
-        const r = (this.getCustomerOrdersByDate(allChartData, dates) as any)['data'];
+        const r = (this.getCustomerOrdersByDate(dates) as any)['data'];
 
-        this.lineChartLabels = (r as any)[0]['orders'].map((o: any) => o['date']).reverse();
+        this.lineChartLabels = (r as any)[0]['orders'].map((o: any) => o['date']);
 
         this.lineChartData = {
           labels: this.lineChartLabels,
@@ -104,13 +104,13 @@ export class LineChartComponent implements OnInit {
     return result;
   };
 
-  getCustomerOrdersByDate(orders: any, dates: any) {
+  getCustomerOrdersByDate(dates: any) {
     const customers = this.topCustomers;
     const prettyDates = dates.map((x: any) => this.toFriendlyDates(x));
     const uniqueDates = Array.from(new Set(prettyDates)).sort();
 
     const result = {};
-    const dataSets: any = (result as any)['date'] = [];
+    const dataSets: any = (result as any)['data'] = [];
 
     customers?.reduce((x: any, y: any, i: any) => {
       const customerOrders: any[] = [];
@@ -118,12 +118,13 @@ export class LineChartComponent implements OnInit {
         customer: y, 
         orders: uniqueDates.reduce((r: any, e: any, j: any) => {
           const obj: any = {};
-          obj['data'] = e;
+          obj['date'] = e;
           obj['total'] = this.getCustomerDateTotal(e, y);
           customerOrders.push(obj);
+
           return customerOrders;
-        }, [])
-      }
+        })
+      };
       return x;
     }, []);
 
@@ -134,11 +135,11 @@ export class LineChartComponent implements OnInit {
     return moment(date).endOf('day').format('DD.MM.YY');
   };
 
-  getCustomerDateTotal(date: string, customer: string) {
+  getCustomerDateTotal(date: any, customer: string) {
     const r = this.allOrders?.filter((o: any) => o.customer.name === customer 
       && this.toFriendlyDates(o.placed) === date);
 
-    const result = (r as any[]).reduce((a: any, b: any) => {
+    const result = (r as any).reduce((a: any, b: any) => {
       return a + b.total;
     }, 0);
 
