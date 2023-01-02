@@ -1,5 +1,5 @@
 import { ServerMessage } from './../../shared/server-message';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { ServerService } from './../../services/server.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Server } from 'src/app/shared/server';
@@ -19,8 +19,7 @@ export class SectionHealthComponent implements OnInit, OnDestroy {
   timerSubsciption?: Subscription;
 
   ngOnInit(): void {
-    this.refreshData();
-    
+    this.refreshData(); 
   }
 
   ngOnDestroy(): void {
@@ -36,10 +35,12 @@ export class SectionHealthComponent implements OnInit, OnDestroy {
 
     this.subscribeToData();
   }
-
   subscribeToData() {
-    // this.timerSubsciption = new Observable<number>().timer(5000).first()
+    // this.timerSubsciption = Observable.timer(5000).first()
     //   .subscribe(() => this.refreshData());
+
+    this.timerSubsciption = timer(2000).subscribe(() => this.refreshData());
+    
   }
 
   sendMessage(message: ServerMessage) {

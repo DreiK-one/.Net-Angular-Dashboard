@@ -164,6 +164,11 @@ namespace backend.Data.DataCreation
                     Name = "Prod-Mail",
                     IsOnline = true
                 },
+                new Server
+                {
+                    Name = "Common-Support",
+                    IsOnline = true
+                }
             };
 
         }
