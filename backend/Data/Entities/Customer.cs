@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace backend.Data.Entities
+﻿namespace backend.Data.Entities
 {
-    public class Customer
+    public class Customer : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string State { get; set; }
