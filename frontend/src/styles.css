@@ -3,6 +3,7 @@
 }
 
 html {
+    box-sizing: border-box;
     height: 100%;
 }
 
@@ -40,18 +41,21 @@ canvas{
 }
 
 .pieChart {
+    max-width: 100%;
     width: 24%;
     float: left;
     margin-right: 25px;
 }
 
 .barChart {
+    max-width: 100%;
     width: 45%;
     float: left;
     margin-right: 25px;
 }
 
 .card-theme {
+    max-width: 100%;
     background-color: #191F26;
     border: none;
     border-radius: 2px;
