@@ -1,5 +1,5 @@
 import { map } from 'rxjs';
-import { SalesDataService } from './../../services/sales-data.service';
+import { SalesDataService } from '../../../services/sales-data.service';
 import { Component, OnInit } from '@angular/core';
 import { ChartData, ChartType, Colors } from 'chart.js';
 import moment from 'moment';

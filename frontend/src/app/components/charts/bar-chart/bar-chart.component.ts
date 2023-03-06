@@ -1,4 +1,4 @@
-import { SalesDataService } from './../../services/sales-data.service';
+import { SalesDataService } from '../../../services/sales-data.service';
 import { Component, OnInit } from '@angular/core';
 import { ChartType } from 'chart.js';
 import * as moment from 'moment';

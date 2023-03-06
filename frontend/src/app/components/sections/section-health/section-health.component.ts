@@ -1,6 +1,6 @@
-import { ServerMessage } from './../../shared/server-message';
+import { ServerMessage } from '../../../shared/server-message';
 import { Observable, timer } from 'rxjs';
-import { ServerService } from './../../services/server.service';
+import { ServerService } from '../../../services/server.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Server } from 'src/app/shared/server';
 import { Subscription } from 'rxjs';

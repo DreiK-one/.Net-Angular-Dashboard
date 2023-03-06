@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Server } from './../shared/server';
-import { ServerMessage } from '../shared/server-message';
+import { Server } from '../../shared/server';
+import { ServerMessage } from '../../shared/server-message';
 
 
 @Component({

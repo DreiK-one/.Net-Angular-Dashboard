@@ -7,19 +7,21 @@ import { RouterModule } from '@angular/router';
 import { NgChartsModule } from 'ng2-charts';
 
 import { AppComponent } from './app.component';
-import { NavbarComponent } from './navbar/navbar.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { SectionSalesComponent } from './sections/section-sales/section-sales.component';
-import { SectionOrdersComponent } from './sections/section-orders/section-orders.component';
-import { SectionHealthComponent } from './sections/section-health/section-health.component';
-import { BarChartComponent } from './charts/bar-chart/bar-chart.component';
-import { LineChartComponent } from './charts/line-chart/line-chart.component';
-import { PieChartComponent } from './charts/pie-chart/pie-chart.component';
-import { ServerComponent } from './server/server.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { SectionSalesComponent } from './components//sections/section-sales/section-sales.component';
+import { SectionOrdersComponent } from './components//sections/section-orders/section-orders.component';
+import { SectionHealthComponent } from './components/sections/section-health/section-health.component';
+import { BarChartComponent } from './components/charts/bar-chart/bar-chart.component';
+import { LineChartComponent } from './components/charts/line-chart/line-chart.component';
+import { PieChartComponent } from './components/charts/pie-chart/pie-chart.component';
+import { ServerComponent } from './components/server/server.component';
 
 import { SalesDataService } from './services/sales-data.service';
 import { ServerService } from './services/server.service';
-import { PaginationComponent } from './pagination/pagination.component';
+import { PaginationComponent } from './components/pagination/pagination.component';
+import { LoginComponent } from './components/login/login.component';
+import { SignupComponent } from './components/signup/signup.component';
 
 
 @NgModule({
@@ -34,7 +36,9 @@ import { PaginationComponent } from './pagination/pagination.component';
     LineChartComponent,
     PieChartComponent,
     ServerComponent,
-    PaginationComponent
+    PaginationComponent,
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule, 
