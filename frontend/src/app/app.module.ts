@@ -22,6 +22,7 @@ import { ServerService } from './services/server.service';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { SignupComponent } from './components/signup/signup.component';
     BrowserModule, 
     RouterModule.forRoot(appRoutes),
     NgChartsModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     SalesDataService, 
