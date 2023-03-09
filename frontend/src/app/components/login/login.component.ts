@@ -1,6 +1,9 @@
+import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import ValidateForm from 'src/app/helpers/validateform';
+import { Login } from 'src/app/shared/login.model';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -15,7 +18,9 @@ export class LoginComponent implements OnInit {
   eyeIcon: string = "fa-eye-slash";
   loginForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, 
+    private _authService: AuthService, 
+    private _router: Router) { }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -30,10 +35,18 @@ export class LoginComponent implements OnInit {
         ((this.eyeIcon = "fa-eye-slash") && (this.type = "password"))
   }
 
-  onSubmit(){
+  async onLogin(){
     if(this.loginForm.valid){
       console.log(this.loginForm.value);
-      //Send the object to database
+      await this._authService.login(this.loginForm.value as Login).subscribe({
+        next: () => {
+          this.loginForm.reset();
+          this._router.navigate(['sales']);
+        },
+        error: (err) => {
+          alert(err?.error.message);
+        }
+      });
     }else{
       console.log('Form is not valid');
       //throw the error using toaster and with required fields

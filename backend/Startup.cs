@@ -59,6 +59,7 @@ namespace backend
 
             app.UseCors(_defaultOrigins);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

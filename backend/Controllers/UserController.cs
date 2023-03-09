@@ -27,7 +27,7 @@ namespace backend.Controllers
 ;           }
 
             var user = await _context.Users.Include(r => r.Role)
-                .FirstOrDefaultAsync(u => u.UserName == authDto.UserName && u.PasswordHash == authDto.PasswordHash);
+                .FirstOrDefaultAsync(u => u.UserName == authDto.Username && u.PasswordHash == authDto.Password);
 
             if (user == null)
             {
