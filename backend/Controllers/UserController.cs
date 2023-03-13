@@ -32,10 +32,10 @@ namespace backend.Controllers
 
             if (user == null)
             {
-                return NotFound( new { Message = "User Not Found!" });
+                return NotFound( new { Message = "User not found!" });
             }
 
-            return Ok(new { Message = "Login Success!"});
+            return Ok(new { Message = "Login success!"});
         }
 
         [HttpPost("register")]
@@ -45,6 +45,17 @@ namespace backend.Controllers
             {
                 return BadRequest();
             }
+
+            if (await CheckUserNameExistsAsync(registerDto.Username))
+            {
+                return BadRequest(new { Message = "Username already exist!" });
+            }
+
+            if (await CheckEmailExistsAsync(registerDto.Email))
+            {
+                return BadRequest(new { Message = "Email already exist!" });
+            }
+
 
             var role = _context.Roles.FirstOrDefault(r => r.Id == 2);
 
@@ -65,6 +76,18 @@ namespace backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "User Registered!" });
+        }
+
+        private async Task<bool> CheckUserNameExistsAsync(string username)
+        {
+            return await _context.Users
+                .AnyAsync(u => u.NormalizedUserName == username.ToUpperInvariant());
+        }
+
+        private async Task<bool> CheckEmailExistsAsync(string email)
+        {
+            return await _context.Users
+                .AnyAsync(u => u.NormalizedEmail == email.ToUpperInvariant());
         }
     }
 }
