@@ -58,7 +58,7 @@ namespace backend.Controllers
                 NormalizedUserName = registerDto.Username.ToUpperInvariant(),
                 Token = "",
                 PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
-                Role = new Role { Id = role.Id, Name = role.Name }
+                RoleId = role.Id
             };
 
             await _context.Users.AddAsync(newUser);

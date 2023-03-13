@@ -10,6 +10,7 @@
         public string NormalizedUserName { get; set; }
         public string PasswordHash { get; set; }
         public string Token { get; set; }
+        public virtual int RoleId { get; set; }
         public virtual Role Role { get; set; }
     }
 }
