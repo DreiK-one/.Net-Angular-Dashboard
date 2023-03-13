@@ -38,14 +38,27 @@ namespace backend.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] User userObject)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if (userObject == null)
+            if (registerDto == null)
             {
                 return BadRequest();
             }
 
-            await _context.Users.AddAsync(userObject);
+            var newUser = new User
+            {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                Email = registerDto.Email,
+                NormalizedEmail = registerDto.Email.ToUpperInvariant(),
+                UserName = registerDto.Username,
+                NormalizedUserName = registerDto.Username.ToUpperInvariant(),
+                Token = "",
+                //PasswordHash = add passwordHash
+                //Role = add roleId and roleName
+            };
+
+            await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
             return Ok(new { Message = "User Registered!" });
