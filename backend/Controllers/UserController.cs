@@ -1,6 +1,7 @@
 ﻿using backend.Data;
 using backend.Data.Entities;
 using backend.Domain.DTOs;
+using backend.Domain.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +46,8 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
+            var role = _context.Roles.FirstOrDefault(r => r.Id == 2);
+
             var newUser = new User
             {
                 FirstName = registerDto.FirstName,
@@ -54,8 +57,8 @@ namespace backend.Controllers
                 UserName = registerDto.Username,
                 NormalizedUserName = registerDto.Username.ToUpperInvariant(),
                 Token = "",
-                //PasswordHash = add passwordHash
-                //Role = add roleId and roleName
+                PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
+                Role = new Role { Id = role.Id, Name = role.Name }
             };
 
             await _context.Users.AddAsync(newUser);
