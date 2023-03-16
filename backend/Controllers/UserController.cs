@@ -4,6 +4,8 @@ using backend.Domain.DTOs;
 using backend.Domain.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
+using System.Text.RegularExpressions;
 
 
 namespace backend.Controllers
@@ -56,6 +58,12 @@ namespace backend.Controllers
                 return BadRequest(new { Message = "Email already exist!" });
             }
 
+            var pass = CheckPasswordStrength(registerDto.Password);
+            if (!string.IsNullOrEmpty(pass))
+            {
+                return BadRequest(new { Message = pass });
+            }
+
 
             var role = _context.Roles.FirstOrDefault(r => r.Id == 2);
 
@@ -88,6 +96,28 @@ namespace backend.Controllers
         {
             return await _context.Users
                 .AnyAsync(u => u.NormalizedEmail == email.ToUpperInvariant());
+        }
+
+        private string CheckPasswordStrength(string password)
+        {
+            var stringBuilder = new StringBuilder();
+
+            if (password.Length < 8)
+            {
+                stringBuilder.Append($"Minimum password length should be 8 {Environment.NewLine}");
+            }
+
+            if (Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") && Regex.IsMatch(password, "[0-9]"))
+            {
+                stringBuilder.Append($"Password should be Alphanumeric {Environment.NewLine}");
+            }
+
+            if (!Regex.IsMatch(password, "[<,>,@,?,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,`,\\,.,/,~,',-,=]"))
+            {
+                stringBuilder.Append($"Password should contain special chars {Environment.NewLine}");
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }
