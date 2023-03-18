@@ -42,6 +42,7 @@ export class LoginComponent implements OnInit {
       await this._authService.login(this.loginForm.value as Login).subscribe({
         next: (res) => {
           this.loginForm.reset();
+          this._authService.storeToken(res.token);
           this._toast.success({detail: "SUCCESS", summary: res.message, duration: 5000});
           this._router.navigate(['sales']);
         },

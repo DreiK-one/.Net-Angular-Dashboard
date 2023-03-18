@@ -18,4 +18,16 @@ export class AuthService {
   login(loginObject: Login){
     return this._http.post<any>(BASE_URL + 'User/authenticate', loginObject);
   }
+
+  storeToken(tokenValue: string){
+    localStorage.setItem('token', tokenValue);
+  }
+
+  getToken(){
+    return localStorage.getItem('token');
+  }
+
+  isLoggedIn(): boolean{
+    return !!localStorage.getItem('token');
+  }
 }
