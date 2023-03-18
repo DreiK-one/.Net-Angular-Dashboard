@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import ValidateForm from 'src/app/helpers/validateform';
 import { Login } from 'src/app/shared/login.model';
 import { Router } from '@angular/router';
+import { NgToastService } from 'ng-angular-popup';
 
 
 @Component({
@@ -20,7 +21,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, 
     private _authService: AuthService, 
-    private _router: Router) { }
+    private _router: Router,
+    private _toast: NgToastService) { }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -37,22 +39,19 @@ export class LoginComponent implements OnInit {
 
   async onLogin(){
     if(this.loginForm.valid){
-      console.log(this.loginForm.value);
       await this._authService.login(this.loginForm.value as Login).subscribe({
-        next: () => {
+        next: (res) => {
           this.loginForm.reset();
+          this._toast.success({detail: "SUCCESS", summary: res.message, duration: 5000});
           this._router.navigate(['sales']);
         },
         error: (err) => {
-          alert(err?.error.message);
+          this._toast.error({detail: "ERROR", summary: err.error.message, duration: 5000});
         }
       });
     }else{
-      console.log('Form is not valid');
-      //throw the error using toaster and with required fields
-
       ValidateForm.validateAllFormFields(this.loginForm);
-      alert("Your form is invalid");
+      this._toast.error({detail: "ERROR", summary: "Your form is invalid", duration: 5000});
     }
   }
 }

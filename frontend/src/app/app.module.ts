@@ -23,6 +23,7 @@ import { PaginationComponent } from './components/pagination/pagination.componen
 import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgToastModule } from 'ng-angular-popup';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     RouterModule.forRoot(appRoutes),
     NgChartsModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgToastModule
   ],
   providers: [
     SalesDataService, 

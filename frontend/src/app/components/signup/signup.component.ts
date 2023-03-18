@@ -1,3 +1,4 @@
+import { NgToastService } from 'ng-angular-popup';
 import { User } from './../../shared/user.model';
 import { AuthService } from './../../services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -20,7 +21,8 @@ export class SignupComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder, 
     private _authService: AuthService, 
-    private _router: Router) { }
+    private _router: Router,
+    private _toast: NgToastService) { }
 
   ngOnInit(): void {
     this.signUpForm = this.formBuilder.group({
@@ -40,20 +42,19 @@ export class SignupComponent implements OnInit {
 
   async onSignUp(){
     if(this.signUpForm.valid){
-      console.log(this.signUpForm.value);
       await this._authService.signUp(this.signUpForm.value as User).subscribe({
         next: (res) => {
-          alert(res.message);
           this.signUpForm.reset();
+          this._toast.success({detail: "SUCCESS", summary: res.message, duration: 5000});
           this._router.navigate(['login']);
         },
         error: (err) =>{
-          alert(err?.error.message);
+          this._toast.error({detail: "ERROR", summary: err.error.message, duration: 5000});
         }
       });
     }else{
       ValidateForm.validateAllFormFields(this.signUpForm);
-      //logic for throwing error
+      this._toast.error({detail: "ERROR", summary: "Your form is invalid", duration: 5000});
     }
   }
 }

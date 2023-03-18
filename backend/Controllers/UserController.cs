@@ -30,11 +30,16 @@ namespace backend.Controllers
 ;           }
 
             var user = await _context.Users.Include(r => r.Role)
-                .FirstOrDefaultAsync(u => u.UserName == authDto.Username && u.PasswordHash == authDto.Password);
+                .FirstOrDefaultAsync(u => u.NormalizedUserName == authDto.Username.ToUpperInvariant());
 
             if (user == null)
             {
                 return NotFound( new { Message = "User not found!" });
+            }
+
+            if (!PasswordHasher.VerifyPassword(authDto.Password, user.PasswordHash))
+            {
+                return BadRequest( new { Message = "Password is incorrect"});
             }
 
             return Ok(new { Message = "Login success!"});
@@ -107,7 +112,7 @@ namespace backend.Controllers
                 stringBuilder.Append($"Minimum password length should be 8 {Environment.NewLine}");
             }
 
-            if (Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") && Regex.IsMatch(password, "[0-9]"))
+            if (!Regex.IsMatch(password, "[a-z]") && !Regex.IsMatch(password, "[A-Z]") && !Regex.IsMatch(password, "[0-9]"))
             {
                 stringBuilder.Append($"Password should be Alphanumeric {Environment.NewLine}");
             }
