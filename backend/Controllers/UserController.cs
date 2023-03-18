@@ -4,6 +4,9 @@ using backend.Domain.DTOs;
 using backend.Domain.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -42,7 +45,13 @@ namespace backend.Controllers
                 return BadRequest( new { Message = "Password is incorrect"});
             }
 
-            return Ok(new { Message = "Login success!"});
+            user.Token = CreateJwtToken(user);
+
+            return Ok(new 
+            { 
+                Token = user.Token,
+                Message = "Login success!"
+            });
         }
 
         [HttpPost("register")]
@@ -91,6 +100,12 @@ namespace backend.Controllers
             return Ok(new { Message = "User Registered!" });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            return Ok(await _context.Users.ToListAsync());
+        }
+
         private async Task<bool> CheckUserNameExistsAsync(string username)
         {
             return await _context.Users
@@ -123,6 +138,29 @@ namespace backend.Controllers
             }
 
             return stringBuilder.ToString();
+        }
+
+        private string CreateJwtToken(User user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("thisIsSecret!");
+            var identity = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Role, user.Role.Name),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
+            });
+            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = identity,
+                Expires = DateTime.Now.AddMinutes(30),
+                SigningCredentials = credentials
+            };
+
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+
+            return jwtTokenHandler.WriteToken(token);
         }
     }
 }
