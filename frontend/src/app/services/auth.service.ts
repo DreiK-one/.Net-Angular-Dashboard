@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Login } from './../shared/login.model';
 import { User } from './../shared/user.model';
 import { HttpClient } from '@angular/common/http';
@@ -9,10 +10,16 @@ import { BASE_URL } from '../shared/baseUrl';
 })
 export class AuthService {
 
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient,
+    private _router: Router) { }
 
   signUp(userObject: User){
     return this._http.post<any>(BASE_URL + 'User/register', userObject);
+  }
+
+  signout(){
+    localStorage.clear();
+    this._router.navigate(['login']);
   }
 
   login(loginObject: Login){
