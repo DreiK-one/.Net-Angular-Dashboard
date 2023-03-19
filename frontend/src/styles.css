@@ -1,4 +1,4 @@
-@import url('app/shared/css/common.css');
+@import url('app/shared/auth-layout/auth-layout.component.css');
 
 * {
     box-sizing: border-box;
