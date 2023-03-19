@@ -143,7 +143,7 @@ namespace backend.Controllers
         private string CreateJwtToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("thisIsSecret!");
+            var key = Encoding.ASCII.GetBytes("thisIsSecretKey......");
             var identity = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Role, user.Role.Name),

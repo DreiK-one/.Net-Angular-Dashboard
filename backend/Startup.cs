@@ -57,7 +57,7 @@ namespace backend
                     x.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("thisIsSecret!")),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("thisIsSecretKey......")),
                         ValidateAudience = false,
                         ValidateIssuer = false
                     };

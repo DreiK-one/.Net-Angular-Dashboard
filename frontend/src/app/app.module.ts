@@ -24,6 +24,8 @@ import { LoginComponent } from './components/login/login.component';
 import { SignupComponent } from './components/signup/signup.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NgToastModule } from 'ng-angular-popup';
+import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component';
+import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
 
 
 @NgModule({
@@ -40,7 +42,9 @@ import { NgToastModule } from 'ng-angular-popup';
     ServerComponent,
     PaginationComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    AuthLayoutComponent,
+    MainLayoutComponent
   ],
   imports: [
     BrowserModule, 
