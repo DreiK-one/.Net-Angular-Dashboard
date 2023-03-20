@@ -15,3 +15,43 @@
     box-shadow: 0 3px 6px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.25);
 
 }
+
+.shadow {
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2), 0 5px 6px rgba(0,0,0,0.3);
+}
+
+.section-container {
+    padding: 30px;
+}
+
+.cards {
+    display: flex;
+    flex-direction: column;
+}
+
+canvas{
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.card-theme {
+    max-width: 100%;
+    background-color: #191F26;
+    border: none;
+    border-radius: 2px;
+}
+
+.card-heading-theme {
+    color: #eee;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    padding: 12px;
+}
+
+.card-body-theme {
+    background-color: #494F56;
+}
+
+.section-container {
+    padding: 30px;
+}
