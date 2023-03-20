@@ -12,8 +12,7 @@
                 </div>
             </div>
             <small *ngIf="loginForm.controls['username'].dirty && 
-                        loginForm.hasError('required', 'username')" 
-                    class="text-danger">
+                        loginForm.hasError('required', 'username')">
                     *Username is required
             </small>
 
@@ -26,8 +25,7 @@
                 </div>
             </div>
             <small *ngIf="loginForm.controls['password'].dirty && 
-                        loginForm.hasError('required', 'password')" 
-                    class="text-danger">
+                        loginForm.hasError('required', 'password')">
                     *Password is required
             </small>
 

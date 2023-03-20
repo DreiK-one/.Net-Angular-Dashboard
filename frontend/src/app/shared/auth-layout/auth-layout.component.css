@@ -4,6 +4,11 @@
 
 .panel{
     margin-top: 70px;
+    background-color: #161A1E!important;
+    min-height: 380px;
+    box-shadow: 0 8px 12px rgba(0,0,0,0.2), 0 5px 6px rgba(0,0,0,0.3);
+    border-radius: 12px;
+    border-color: #161A1E!important;
 }
 
 .panel-heading{
@@ -16,6 +21,7 @@
     margin-left: auto;
     text-decoration: none;
     cursor: pointer;
+    color: #44a4cd;
 }
 
 a:hover{
@@ -33,25 +39,19 @@ a:hover{
     border-radius: 15px;
 }
 
-.panel{
-    min-height: 380px;
-    box-shadow: 20px 20px 80px rgb(218, 218, 218);
-    border-radius: 12px;
-}
-
 .input-field{
     border-radius: 5px;
     padding: 5px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    border: 1px solid #ddd;
-    color: #4343ff;
+    border: 1px solid #44a4cd;
+    color: #44a4cd;
 }
 
 .input-field.error{
-    border: 1px solid red;
-    color: red;
+    border: 1px solid #ff6b6b;
+    color: #ff6b6b;
 }
 
 input[type='text'],
@@ -60,6 +60,8 @@ input[type='password']{
     outline: none;
     box-shadow: none;
     width: 100%;
+    background-color: #161A1E!important;
+    color:white;
 }
 
 .fa-eye-slash.btn{
@@ -77,12 +79,12 @@ img{
 }
 
 h3{
-    color: #000000;
+    color: white;
     font-weight: bold;
 }
 
 .bordert{
-    border-top: 1px solid #aaa;
+    border-top: 1px solid  #44a4cd;
     position: relative;
 }
 
@@ -91,11 +93,12 @@ h3{
     position: absolute;
     top: -13px;
     left: 33%;
-    background-color: #fff;
+    background-color: #161A1E!important;
     padding: 0 8px;
-    color: #000000;
+    color:  #44a4cd;
 }
 
 small{
     margin-right: 70%;
+    color: #ff6b6b;
 }

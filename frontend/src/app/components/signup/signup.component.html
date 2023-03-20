@@ -12,8 +12,7 @@
                 </div>
             </div>
             <small *ngIf="signUpForm.controls['firstname'].dirty && 
-                        signUpForm.hasError('required', 'firstname')" 
-                    class="text-danger">
+                        signUpForm.hasError('required', 'firstname')">
                     *Firstname is required
             </small>
 
@@ -25,8 +24,7 @@
                 </div>
             </div>
             <small *ngIf="signUpForm.controls['lastname'].dirty && 
-                        signUpForm.hasError('required', 'lastname')" 
-                    class="text-danger">
+                        signUpForm.hasError('required', 'lastname')">
                     *Lastname is required
             </small>
 
