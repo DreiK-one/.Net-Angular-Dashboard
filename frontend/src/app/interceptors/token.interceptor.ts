@@ -37,7 +37,7 @@ export class TokenInterceptor implements HttpInterceptor {
           }
         }
 
-        return throwError(() => new Error("Some other error occured"));
+        return throwError(() => this._toastService.error({detail: "ERROR", summary: err.error.message, duration: 5000}));
       })
     );
   }
