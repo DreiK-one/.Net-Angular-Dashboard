@@ -1,3 +1,4 @@
+import { SectionUsersComponent } from './components/sections/section-users/section-users.component';
 import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -20,6 +21,7 @@ export const appRoutes: Routes = [
         { path: 'sales', component: SectionSalesComponent, canActivate: [AuthGuard] },
         { path: 'orders', component: SectionOrdersComponent, canActivate: [AuthGuard] },
         { path: 'health', component: SectionHealthComponent, canActivate: [AuthGuard] },
+        { path: 'users', component: SectionUsersComponent, canActivate: [AuthGuard] }
     ]},
 
     {path: '**', redirectTo: '/sales'}

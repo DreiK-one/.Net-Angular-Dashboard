@@ -2,6 +2,7 @@
 using backend.Data.Entities;
 using backend.Domain.DTOs;
 using backend.Domain.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -100,6 +101,7 @@ namespace backend.Controllers
             return Ok(new { Message = "User Registered!" });
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {

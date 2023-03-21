@@ -1,5 +1,6 @@
+import { TokenInterceptor } from './interceptors/token.interceptor';
 import { appRoutes } from './routes';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -26,6 +27,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NgToastModule } from 'ng-angular-popup';
 import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
+import { SectionUsersComponent } from './components/sections/section-users/section-users.component';
 
 
 @NgModule({
@@ -44,7 +46,8 @@ import { MainLayoutComponent } from './shared/main-layout/main-layout.component'
     LoginComponent,
     SignupComponent,
     AuthLayoutComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    SectionUsersComponent
   ],
   imports: [
     BrowserModule, 
@@ -56,7 +59,12 @@ import { MainLayoutComponent } from './shared/main-layout/main-layout.component'
   ],
   providers: [
     SalesDataService, 
-    ServerService
+    ServerService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
