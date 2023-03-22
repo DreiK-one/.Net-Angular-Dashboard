@@ -1,3 +1,4 @@
+import { UserStoreService } from './../../services/user-store.service';
 import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 
@@ -9,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
 
-  constructor(private _authService: AuthService) { }
+  public fullName: string = "";
+
+  constructor(private _authService: AuthService, 
+    private userStore: UserStoreService) { }
 
   ngOnInit(): void {
+    this.userStore.getFullNameFromStore().subscribe(res => {
+      let fullnameFromToken = this._authService.getFullnameFromToken();
+      this.fullName = res || fullnameFromToken;
+    });
   }
 
   logout(){

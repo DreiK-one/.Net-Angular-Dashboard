@@ -1,3 +1,5 @@
+import { AuthService } from './../../services/auth.service';
+import { UserStoreService } from './../../services/user-store.service';
 import { Component, OnInit } from '@angular/core';
 
 
@@ -8,9 +10,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
 
-  constructor() { }
+  public role: string = "";
+
+  constructor(private _userStore: UserStoreService, 
+    private _authService: AuthService) { }
 
   ngOnInit(): void {
+    this._userStore.getRoleFromStore().subscribe(res => {
+      const roleFromToken = this._authService.getRoleFromToken();
+      this.role = res || roleFromToken;
+    })
   }
 
 }

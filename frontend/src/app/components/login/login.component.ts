@@ -1,3 +1,4 @@
+import { UserStoreService } from './../../services/user-store.service';
 import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -22,7 +23,8 @@ export class LoginComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, 
     private _authService: AuthService, 
     private _router: Router,
-    private _toast: NgToastService) { }
+    private _toast: NgToastService, 
+    private _userStore: UserStoreService) { }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -43,6 +45,9 @@ export class LoginComponent implements OnInit {
         next: (res) => {
           this.loginForm.reset();
           this._authService.storeToken(res.token);
+          const tokenPayload = this._authService.decodeToken();
+          this._userStore.setFullNameForStore(tokenPayload.unique_name);
+          this._userStore.setRoleForStore(tokenPayload.role);
           this._toast.success({detail: "SUCCESS", summary: res.message, duration: 5000});
           this._router.navigate(['sales']);
         },

@@ -9,9 +9,9 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SectionUsersComponent implements OnInit {
 
-  constructor(private _apiService: ApiService) { }
+  public users: any = [];
 
-  users: any = [];
+  constructor(private _apiService: ApiService) { }
 
   ngOnInit(): void {
     this._apiService.getUsers().subscribe(res => {
