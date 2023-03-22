@@ -6,24 +6,24 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class UserStoreService {
 
-  private fullName$ = new BehaviorSubject<string>("");
-  private role$ = new BehaviorSubject<string>("");
+  private _fullName$ = new BehaviorSubject<string>("");
+  private _role$ = new BehaviorSubject<string>("");
 
   constructor() { }
 
   public getRoleFromStore(){
-    return this.role$.asObservable();
+    return this._role$.asObservable();
   }
 
   public setRoleForStore(role: string){
-    this.role$.next(role);
+    this._role$.next(role);
   }
 
   public getFullNameFromStore(){
-    return this.fullName$.asObservable();
+    return this._fullName$.asObservable();
   }
 
   public setFullNameForStore(fullname: string){
-    this.fullName$.next(fullname);
+    this._fullName$.next(fullname);
   }
 }

@@ -20,14 +20,14 @@ export class LoginComponent implements OnInit {
   eyeIcon: string = "fa-eye-slash";
   loginForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, 
+  constructor(private _formBuilder: FormBuilder, 
     private _authService: AuthService, 
     private _router: Router,
     private _toast: NgToastService, 
     private _userStore: UserStoreService) { }
 
   ngOnInit(): void {
-    this.loginForm = this.formBuilder.group({
+    this.loginForm = this._formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });

@@ -19,13 +19,13 @@ export class SignupComponent implements OnInit {
   eyeIcon: string = "fa-eye-slash";
   signUpForm!: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, 
+  constructor(private _formBuilder: FormBuilder, 
     private _authService: AuthService, 
     private _router: Router,
     private _toast: NgToastService) { }
 
   ngOnInit(): void {
-    this.signUpForm = this.formBuilder.group({
+    this.signUpForm = this._formBuilder.group({
       firstname: ['', Validators.required],
       lastname: ['', Validators.required],
       username: ['', Validators.required],

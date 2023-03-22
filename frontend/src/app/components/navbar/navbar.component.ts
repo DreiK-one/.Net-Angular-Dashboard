@@ -13,10 +13,10 @@ export class NavbarComponent implements OnInit {
   public fullName: string = "";
 
   constructor(private _authService: AuthService, 
-    private userStore: UserStoreService) { }
+    private _userStore: UserStoreService) { }
 
   ngOnInit(): void {
-    this.userStore.getFullNameFromStore().subscribe(res => {
+    this._userStore.getFullNameFromStore().subscribe(res => {
       let fullnameFromToken = this._authService.getFullnameFromToken();
       this.fullName = res || fullnameFromToken;
     });

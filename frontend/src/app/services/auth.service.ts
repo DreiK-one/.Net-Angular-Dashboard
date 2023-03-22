@@ -12,11 +12,11 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 })
 export class AuthService {
 
-  private userPayload: any;
+  private _userPayload: any;
 
   constructor(private _http: HttpClient,
     private _router: Router) {
-      this.userPayload = this.decodeToken();
+      this._userPayload = this.decodeToken();
      }
 
   signUp(userObject: User){
@@ -51,14 +51,14 @@ export class AuthService {
   }
 
   getFullnameFromToken(){
-    if (this.userPayload) {
-      return this.userPayload.unique_name;
+    if (this._userPayload) {
+      return this._userPayload.unique_name;
     }
   }
 
   getRoleFromToken(){
-    if (this.userPayload) {
-      return this.userPayload.role;
+    if (this._userPayload) {
+      return this._userPayload.role;
     }
   }
 }
