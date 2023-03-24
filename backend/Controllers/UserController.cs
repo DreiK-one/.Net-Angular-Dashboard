@@ -20,10 +20,13 @@ namespace backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly ApiContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UserController(ApiContext context)
+        public UserController(ApiContext context, 
+            IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("authenticate")]
@@ -48,11 +51,16 @@ namespace backend.Controllers
             }
 
             user.Token = CreateJwtToken(user);
+            var newAccessToken = user.Token;
+            var newRefreshToken = CreateRefreshToken();
+            user.RefreshToken = newRefreshToken;
 
-            return Ok(new 
+            await _context.SaveChangesAsync();
+
+            return Ok(new TokenDto
             { 
-                Token = user.Token,
-                Message = "Login success!"
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
             });
         }
 
@@ -146,7 +154,7 @@ namespace backend.Controllers
         private string CreateJwtToken(User user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("thisIsSecretKey......");
+            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
             var identity = new ClaimsIdentity(new Claim[]
             {
                 new Claim(ClaimTypes.Role, user.Role.Name),
@@ -180,6 +188,33 @@ namespace backend.Controllers
             }
 
             return refreshToken;
+        }
+
+        private ClaimsPrincipal GetPrincipleFromExpiredToken(string token)
+        {
+            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+            if (jwtSecurityToken == null 
+                || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, 
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("This is invalid token!");
+            }
+
+            return principal;
         }
     }
 }
