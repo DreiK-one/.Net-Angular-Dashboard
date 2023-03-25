@@ -28,6 +28,7 @@ import { NgToastModule } from 'ng-angular-popup';
 import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
 import { SectionUsersComponent } from './components/sections/section-users/section-users.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import { SectionUsersComponent } from './components/sections/section-users/secti
     NgChartsModule,
     HttpClientModule,
     ReactiveFormsModule,
-    NgToastModule
+    NgToastModule,
+    FormsModule
   ],
   providers: [
     SalesDataService, 
