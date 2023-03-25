@@ -1,3 +1,4 @@
+import { TokenModel } from './../shared/token.model';
 import { Router } from '@angular/router';
 import { Login } from './../shared/login.model';
 import { User } from './../shared/user.model';
@@ -36,8 +37,16 @@ export class AuthService {
     localStorage.setItem('token', tokenValue);
   }
 
+  storeRefreshToken(tokenValue: string){
+    localStorage.setItem('refreshToken', tokenValue);
+  }
+
   getToken(){
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken(){
+    return localStorage.getItem('refreshToken');
   }
 
   isLoggedIn(): boolean{
@@ -60,5 +69,9 @@ export class AuthService {
     if (this._userPayload) {
       return this._userPayload.role;
     }
+  }
+
+  renewToken(token: TokenModel){
+    return this._http.post<any>(BASE_URL + "User/refresh", token);
   }
 }

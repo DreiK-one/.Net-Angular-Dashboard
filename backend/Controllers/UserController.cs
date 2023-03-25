@@ -54,6 +54,7 @@ namespace backend.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
 
             await _context.SaveChangesAsync();
 
@@ -116,6 +117,39 @@ namespace backend.Controllers
         {
             return Ok(await _context.Users.ToListAsync());
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken(TokenDto tokenDto)
+        {
+            if (tokenDto == null)
+            {
+                return BadRequest("Invalid client request");
+            }
+
+            var accessToken = tokenDto.AccessToken;
+            var refreshToken = tokenDto.RefreshToken;
+            var principal = GetPrincipleFromExpiredToken(accessToken);
+            var username = principal.Identity.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+
+            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest("Invalid request");
+            }
+
+            var newAccessToken = CreateJwtToken(user);
+            var newRefreshToken = CreateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new TokenDto
+            {
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
+        }
+
 
         private async Task<bool> CheckUserNameExistsAsync(string username)
         {
