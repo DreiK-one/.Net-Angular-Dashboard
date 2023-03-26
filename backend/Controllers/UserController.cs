@@ -174,7 +174,7 @@ namespace backend.Controllers
             var emailToken = Convert.ToBase64String(tokenBytes);
             user.ResetPasswordToken = emailToken;
             user.ResetPasswordExpiry = DateTime.Now.AddMinutes(15);
-            var from = _configuration["EmailSettings;From"];
+            var from = _configuration["EmailSettings:From"];
             var emailModel = new EmailModel(email, "Reset password", EmailBody.EmailStringBody(email, emailToken));
             _emailService.SendEmail(emailModel);
 

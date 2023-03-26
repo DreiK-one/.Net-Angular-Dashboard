@@ -1,3 +1,4 @@
+import { ResetPasswordService } from './../../services/reset-password.service';
 import { UserStoreService } from './../../services/user-store.service';
 import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
@@ -26,7 +27,8 @@ export class LoginComponent implements OnInit {
     private _authService: AuthService, 
     private _router: Router,
     private _toast: NgToastService, 
-    private _userStore: UserStoreService) { }
+    private _userStore: UserStoreService,
+    private _resetPasswordService: ResetPasswordService) { }
 
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
@@ -74,10 +76,20 @@ export class LoginComponent implements OnInit {
   confirmToSend(){
     if (this.checkValidEmail(this.resetPasswordEmail)) {
       console.log(this.resetPasswordEmail);
-      this.resetPasswordEmail = "";
-      const buttonRef = document.getElementById("closeBtn");
-      buttonRef?.click();
-      //add api logic
+
+      this._resetPasswordService
+        .sendResetPasswordLink(this.resetPasswordEmail)
+        .subscribe({
+          next: (res) => {
+            this._toast.success({detail: "SUCCESS", summary: "Reset success!", duration: 3000});
+            this.resetPasswordEmail = "";
+            const buttonRef = document.getElementById("closeBtn");
+            buttonRef?.click();
+          },
+          error: (err) =>{
+            this._toast.error({detail: "ERROR", summary: err.error.message, duration: 5000});
+          }
+        })
     }
   }
 }

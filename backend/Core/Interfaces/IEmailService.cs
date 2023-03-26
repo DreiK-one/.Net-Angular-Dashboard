@@ -1,4 +1,5 @@
 ﻿using backend.Core.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Core.Interfaces
 {

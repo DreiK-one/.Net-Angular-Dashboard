@@ -3,6 +3,7 @@ using backend.Core.Models;
 using MailKit.Net.Smtp;
 using MimeKit;
 
+
 namespace backend.Domain.Services
 {
     public class EmailService : IEmailService
@@ -17,7 +18,7 @@ namespace backend.Domain.Services
         {
             var emailMessage = new MimeMessage();
             var from = _configuration["EmailSettings:From"];
-            emailMessage.From.Add(new MailboxAddress(".NetAngularDashboard", from));
+            emailMessage.From.Add(new MailboxAddress("NetAngularDashboard", from));
             emailMessage.To.Add(new MailboxAddress(emailModel.To, emailModel.To));
             emailMessage.Subject = emailModel.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
@@ -29,6 +30,7 @@ namespace backend.Domain.Services
             {
                 try
                 {
+                    client.CheckCertificateRevocation = false;
                     client.Connect(_configuration["EmailSettings:SmtpServer"], 465, true);
                     client.Authenticate(_configuration["EmailSettings:From"], _configuration["EmailSettings:Password"]);
                     client.Send(emailMessage);
