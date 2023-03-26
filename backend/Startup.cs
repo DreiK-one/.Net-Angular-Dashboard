@@ -1,5 +1,7 @@
-﻿using backend.Data;
+﻿using backend.Core.Interfaces;
+using backend.Data;
 using backend.Data.DataCreation;
+using backend.Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +47,8 @@ namespace backend
             services.AddSwaggerGen();
 
             services.AddTransient<DataSeed>();
+
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddAuthentication(x =>
             {

@@ -1,4 +1,4 @@
-﻿namespace backend.Domain.DTOs
+﻿namespace backend.Core.DTOs
 {
     public class RegisterDto
     {
