@@ -1,3 +1,4 @@
+import { ResetComponent } from './components/reset/reset.component';
 import { SectionUsersComponent } from './components/sections/section-users/section-users.component';
 import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
 import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component';
@@ -15,6 +16,7 @@ export const appRoutes: Routes = [
         { path: '', redirectTo: '/sales', pathMatch: 'full'},
         { path: 'login', component: LoginComponent},
         { path: 'signup', component: SignupComponent},
+        { path: 'reset', component: ResetComponent}
 
     ]},
     { path: '', component: MainLayoutComponent, children: [

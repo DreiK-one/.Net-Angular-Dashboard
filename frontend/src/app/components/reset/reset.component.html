@@ -1,0 +1,45 @@
+<div class="panel-heading">
+    <h3 class="pt-3">
+        Reset password
+    </h3>
+    <div class="panel-body p-3">
+        <form [formGroup]="resetPasswordForm">
+            <div class="form-group pt-3">
+                <div class="input-field" 
+                    [class.error]="resetPasswordForm.controls['password'].dirty && 
+                    resetPasswordForm.hasError('required', 'password')">
+                    <span class="fa fa-user p-2"></span>
+                    <input formControlName="password" type="password" placeholder="New password">
+                </div>
+            </div>
+            <small class="danger" 
+                   *ngIf="resetPasswordForm.controls['password'].dirty && 
+                   resetPasswordForm.hasError('required', 'password')">
+                    *Password is required
+            </small>
+
+            <div class="form-group pt-3">
+                <div class="input-field" 
+                    [class.error]="resetPasswordForm.controls['confirmPassword'].dirty && 
+                    resetPasswordForm.hasError('required', 'confirmPassword') || 
+                    resetPasswordForm.hasError('confirmPasswordValidator', 'confirmPassword')">
+                    <span class="fa fa-user p-2"></span>
+                    <input formControlName="confirmPassword" type="password" placeholder="Confirm password">
+                </div>
+            </div>
+            <small class="danger" 
+                   *ngIf="resetPasswordForm.controls['confirmPassword'].dirty && 
+                   resetPasswordForm.hasError('required', 'confirmPassword')">
+                    *ConfirmPassword is required
+            </small>
+            <small class="danger" 
+                   *ngIf="resetPasswordForm.hasError('confirmPasswordValidator', 'confirmPassword')">
+                    *Password didn't matched
+            </small>
+
+            <button (click)="reset()" type="submit" class="btn btn-primary btn-block mt-4 w-100">
+                Reset
+            </button>
+        </form>               
+    </div>
+</div>

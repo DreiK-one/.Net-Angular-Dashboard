@@ -29,6 +29,7 @@ import { AuthLayoutComponent } from './shared/auth-layout/auth-layout.component'
 import { MainLayoutComponent } from './shared/main-layout/main-layout.component';
 import { SectionUsersComponent } from './components/sections/section-users/section-users.component';
 import { FormsModule } from '@angular/forms';
+import { ResetComponent } from './components/reset/reset.component';
 
 
 @NgModule({
@@ -48,7 +49,8 @@ import { FormsModule } from '@angular/forms';
     SignupComponent,
     AuthLayoutComponent,
     MainLayoutComponent,
-    SectionUsersComponent
+    SectionUsersComponent,
+    ResetComponent
   ],
   imports: [
     BrowserModule, 
