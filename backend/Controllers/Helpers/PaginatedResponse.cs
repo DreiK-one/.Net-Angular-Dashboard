@@ -1,4 +1,4 @@
-﻿namespace backend.Controllers.Helpers
+﻿namespace API.Controllers.Helpers
 {
     public class PaginatedResponse<T>
     {

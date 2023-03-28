@@ -1,9 +1,4 @@
-using backend.Data;
-using backend.Data.DataCreation;
-using Microsoft.EntityFrameworkCore;
-
-
-namespace backend
+namespace API
 {
     public class Program
     {

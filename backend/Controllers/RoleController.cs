@@ -1,9 +1,8 @@
-﻿using backend.Data;
-using backend.Data.Entities;
+﻿using Data;
 using Microsoft.AspNetCore.Mvc;
 
 
-namespace backend.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

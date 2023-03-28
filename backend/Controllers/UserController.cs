@@ -1,9 +1,9 @@
-﻿using backend.Core.DTOs;
-using backend.Core.Helpers;
-using backend.Core.Interfaces;
-using backend.Core.Models;
-using backend.Data;
-using backend.Data.Entities;
+﻿using Core.DTOs;
+using Core.Helpers;
+using Core.Interfaces;
+using Core.Models;
+using Data;
+using Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 
-namespace backend.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

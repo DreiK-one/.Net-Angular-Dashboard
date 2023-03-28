@@ -1,15 +1,14 @@
-﻿using backend.Core.Interfaces;
-using backend.Data;
-using backend.Data.DataCreation;
-using backend.Domain.Services;
+﻿using Core.Interfaces;
+using Data;
+using Data.DataCreation;
+using Domain.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace backend
+
+namespace API
 {
     public class Startup
     {
