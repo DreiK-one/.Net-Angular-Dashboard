@@ -24,16 +24,25 @@ namespace API.Controllers
         private readonly ApiContext _context;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
+        private readonly ITokenService _tokenService;
 
         public UserController(ApiContext context, 
             IConfiguration configuration,
-            IEmailService emailService)
+            IEmailService emailService, 
+            IUserService userService,
+            IRoleService roleService,
+            ITokenService tokenService)
         {
             _context = context;
             _configuration = configuration;
             _emailService = emailService;
+            _userService = userService;
+            _roleService = roleService;
+            _tokenService = tokenService;
         }
-
+        //refactoring
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthDto authDto)
         {
@@ -42,8 +51,7 @@ namespace API.Controllers
                 return BadRequest();
 ;           }
 
-            var user = await _context.Users.Include(r => r.Role)
-                .FirstOrDefaultAsync(u => u.NormalizedUserName == authDto.Username.ToUpperInvariant());
+            var user = await _userService.GetUserByUsernameWithIncludes(authDto);
 
             if (user == null)
             {
@@ -53,15 +61,17 @@ namespace API.Controllers
             if (!PasswordHasher.VerifyPassword(authDto.Password, user.PasswordHash))
             {
                 return BadRequest( new { Message = "Password is incorrect"});
-            }
+            }          
 
-            user.Token = CreateJwtToken(user);
+            //refactoring
+            user.Token = _tokenService.CreateJwtToken(user);
             var newAccessToken = user.Token;
-            var newRefreshToken = CreateRefreshToken();
+            var newRefreshToken = _tokenService.CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
 
             await _context.SaveChangesAsync();
+            //refactoring
 
             return Ok(new TokenDto
             { 
@@ -69,7 +79,7 @@ namespace API.Controllers
                 RefreshToken = newRefreshToken
             });
         }
-
+        //refactoring
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
@@ -78,24 +88,24 @@ namespace API.Controllers
                 return BadRequest();
             }
 
-            if (await CheckUserNameExistsAsync(registerDto.Username))
+            if (await _userService.CheckUserNameExists(registerDto.Username))
             {
                 return BadRequest(new { Message = "Username already exist!" });
             }
 
-            if (await CheckEmailExistsAsync(registerDto.Email))
+            if (await _userService.CheckEmailExists(registerDto.Email))
             {
                 return BadRequest(new { Message = "Email already exist!" });
             }
 
-            var pass = CheckPasswordStrength(registerDto.Password);
+            var pass = _userService.CheckPasswordStrength(registerDto.Password);
+
             if (!string.IsNullOrEmpty(pass))
             {
                 return BadRequest(new { Message = pass });
             }
 
-
-            var role = _context.Roles.FirstOrDefault(r => r.Id == 2);
+            var role = await _roleService.GetUserRole();
 
             var newUser = new User
             {
@@ -106,12 +116,11 @@ namespace API.Controllers
                 UserName = registerDto.Username,
                 NormalizedUserName = registerDto.Username.ToUpperInvariant(),
                 Token = "",
-                PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
+                PasswordHash = PasswordHasher.HashPassword(registerDto.Password), //refactoring
                 RoleId = role.Id
             };
 
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+            await _userService.CreateUser(newUser);
 
             return Ok(new { Message = "User Registered!" });
         }
@@ -120,9 +129,10 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            return Ok(await _context.Users.ToListAsync());
+            var users = await _userService.GetAllUsers();
+            return Ok(users);
         }
-
+        //refactoring
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(TokenDto tokenDto)
         {
@@ -131,22 +141,26 @@ namespace API.Controllers
                 return BadRequest("Invalid client request");
             }
 
+            //refactoring
             var accessToken = tokenDto.AccessToken;
             var refreshToken = tokenDto.RefreshToken;
-            var principal = GetPrincipleFromExpiredToken(accessToken);
+            var principal = _tokenService.GetPrincipleFromExpiredToken(accessToken);
             var username = principal.Identity.Name;
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            //refactoring
 
             if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
                 return BadRequest("Invalid request");
             }
 
-            var newAccessToken = CreateJwtToken(user);
-            var newRefreshToken = CreateRefreshToken();
+            //refactoring
+            var newAccessToken = _tokenService.CreateJwtToken(user);
+            var newRefreshToken = _tokenService.CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
 
             await _context.SaveChangesAsync();
+            //refactoring
 
             return Ok(new TokenDto
             {
@@ -154,12 +168,11 @@ namespace API.Controllers
                 RefreshToken = newRefreshToken
             });
         }
-
+        //refactoring
         [HttpPost("send-reset-email/{email}")]
         public async Task<IActionResult> SendEmail(string email)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.NormalizedEmail == email.ToUpperInvariant());
+            var user = await _userService.GetUserByEmail(email);
 
             if (user is null)
             {
@@ -170,6 +183,7 @@ namespace API.Controllers
                 });
             }
 
+            //refactoring
             var tokenBytes = RandomNumberGenerator.GetBytes(64);
             var emailToken = Convert.ToBase64String(tokenBytes);
             user.ResetPasswordToken = emailToken;
@@ -180,6 +194,7 @@ namespace API.Controllers
 
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            //refactoring
 
             return Ok(new
             {
@@ -187,14 +202,12 @@ namespace API.Controllers
                 Message = "Email sent!"
             });
         }
-
+        //refactoring
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            var newToken = resetPasswordDto.EmailToken.Replace(" ", "+");
-            var user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.NormalizedEmail == resetPasswordDto.Email.ToUpperInvariant());
+            resetPasswordDto.EmailToken.Replace(" ", "+");
+            var user = await _userService.GetUserByEmail(resetPasswordDto.Email);
 
             if (user is null)
             {
@@ -217,116 +230,17 @@ namespace API.Controllers
                 });
             }
 
+            //refactoring
             user.PasswordHash = PasswordHasher.HashPassword(resetPasswordDto.NewPassword);
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            //refactoring
 
             return Ok(new
             {
                 StatusCode = 200,
                 Message = "Password reset successfully!"
             });
-        }
-
-
-        private async Task<bool> CheckUserNameExistsAsync(string username)
-        {
-            return await _context.Users
-                .AnyAsync(u => u.NormalizedUserName == username.ToUpperInvariant());
-        }
-
-        private async Task<bool> CheckEmailExistsAsync(string email)
-        {
-            return await _context.Users
-                .AnyAsync(u => u.NormalizedEmail == email.ToUpperInvariant());
-        }
-
-        private string CheckPasswordStrength(string password)
-        {
-            var stringBuilder = new StringBuilder();
-
-            if (password.Length < 8)
-            {
-                stringBuilder.Append($"Minimum password length should be 8 {Environment.NewLine}");
-            }
-
-            if (!Regex.IsMatch(password, "[a-z]") && !Regex.IsMatch(password, "[A-Z]") && !Regex.IsMatch(password, "[0-9]"))
-            {
-                stringBuilder.Append($"Password should be Alphanumeric {Environment.NewLine}");
-            }
-
-            if (!Regex.IsMatch(password, "[<,>,@,?,!,#,$,%,^,&,*,(,),_,+,\\[,\\],{,},?,:,;,|,`,\\,.,/,~,',-,=]"))
-            {
-                stringBuilder.Append($"Password should contain special chars {Environment.NewLine}");
-            }
-
-            return stringBuilder.ToString();
-        }
-
-        private string CreateJwtToken(User user)
-        {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
-            var identity = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Role, user.Role.Name),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
-            });
-            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = identity,
-                Expires = DateTime.Now.AddMinutes(30),
-                SigningCredentials = credentials
-            };
-
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-
-            return jwtTokenHandler.WriteToken(token);
-        }
-
-        private string CreateRefreshToken()
-        {
-            var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var refreshToken = Convert.ToBase64String(tokenBytes);
-
-            var tokenInUser = _context.Users
-                .Any(u => u.RefreshToken == refreshToken);
-
-            if (tokenInUser)
-            {
-                return CreateRefreshToken();
-            }
-
-            return refreshToken;
-        }
-
-        private ClaimsPrincipal GetPrincipleFromExpiredToken(string token)
-        {
-            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false,
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateLifetime = false
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-
-            if (jwtSecurityToken == null 
-                || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, 
-                    StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("This is invalid token!");
-            }
-
-            return principal;
         }
     }
 }
