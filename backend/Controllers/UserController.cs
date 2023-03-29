@@ -1,18 +1,8 @@
 ﻿using Core.DTOs;
 using Core.Helpers;
 using Core.Interfaces;
-using Core.Models;
-using Data;
-using Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
 
 
 namespace API.Controllers
@@ -21,226 +11,206 @@ namespace API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly ApiContext _context;
-        private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly IUserService _userService;
-        private readonly IRoleService _roleService;
         private readonly ITokenService _tokenService;
 
-        public UserController(ApiContext context, 
-            IConfiguration configuration,
-            IEmailService emailService, 
+        public UserController(IEmailService emailService, 
             IUserService userService,
-            IRoleService roleService,
             ITokenService tokenService)
         {
-            _context = context;
-            _configuration = configuration;
             _emailService = emailService;
             _userService = userService;
-            _roleService = roleService;
             _tokenService = tokenService;
         }
-        //refactoring
+
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthDto authDto)
         {
-            if (authDto == null)
+            try
             {
-                return BadRequest();
-;           }
+                if (authDto == null)
+                {
+                    return BadRequest();
+                    ;
+                }
 
-            var user = await _userService.GetUserByUsernameWithIncludes(authDto);
+                var user = await _userService.GetUserByUsernameWithIncludes(authDto);
 
-            if (user == null)
-            {
-                return NotFound( new { Message = "User not found!" });
+                if (user == null)
+                {
+                    return NotFound(new { Message = "User not found!" });
+                }
+
+                if (!PasswordHasher.VerifyPassword(authDto.Password, user.PasswordHash))
+                {
+                    return BadRequest(new { Message = "Password is incorrect" });
+                }
+
+                var token = await _tokenService.CreateTokenForAuthenticatedUser(user);
+
+                return Ok(token);
             }
-
-            if (!PasswordHasher.VerifyPassword(authDto.Password, user.PasswordHash))
+            catch (Exception ex)
             {
-                return BadRequest( new { Message = "Password is incorrect"});
-            }          
-
-            //refactoring
-            user.Token = _tokenService.CreateJwtToken(user);
-            var newAccessToken = user.Token;
-            var newRefreshToken = _tokenService.CreateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
-
-            await _context.SaveChangesAsync();
-            //refactoring
-
-            return Ok(new TokenDto
-            { 
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            });
+                return StatusCode(500, new { ex.Message });
+            }  
         }
-        //refactoring
+
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if (registerDto == null)
+            try
             {
-                return BadRequest();
+                if (registerDto == null)
+                {
+                    return BadRequest();
+                }
+
+                if (await _userService.CheckUserNameExists(registerDto.Username))
+                {
+                    return BadRequest(new { Message = "Username already exist!" });
+                }
+
+                if (await _userService.CheckEmailExists(registerDto.Email))
+                {
+                    return BadRequest(new { Message = "Email already exist!" });
+                }
+
+                var pass = _userService.CheckPasswordStrength(registerDto.Password);
+
+                if (!string.IsNullOrEmpty(pass))
+                {
+                    return BadRequest(new { Message = pass });
+                }
+
+                await _userService.CreateUser(registerDto);
+
+                return Ok(new { Message = "User Registered!" });
             }
-
-            if (await _userService.CheckUserNameExists(registerDto.Username))
+            catch (Exception ex)
             {
-                return BadRequest(new { Message = "Username already exist!" });
-            }
-
-            if (await _userService.CheckEmailExists(registerDto.Email))
-            {
-                return BadRequest(new { Message = "Email already exist!" });
-            }
-
-            var pass = _userService.CheckPasswordStrength(registerDto.Password);
-
-            if (!string.IsNullOrEmpty(pass))
-            {
-                return BadRequest(new { Message = pass });
-            }
-
-            var role = await _roleService.GetUserRole();
-
-            var newUser = new User
-            {
-                FirstName = registerDto.FirstName,
-                LastName = registerDto.LastName,
-                Email = registerDto.Email,
-                NormalizedEmail = registerDto.Email.ToUpperInvariant(),
-                UserName = registerDto.Username,
-                NormalizedUserName = registerDto.Username.ToUpperInvariant(),
-                Token = "",
-                PasswordHash = PasswordHasher.HashPassword(registerDto.Password), //refactoring
-                RoleId = role.Id
-            };
-
-            await _userService.CreateUser(newUser);
-
-            return Ok(new { Message = "User Registered!" });
+                return StatusCode(500, new { ex.Message });
+            }       
         }
 
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userService.GetAllUsers();
-            return Ok(users);
+            try
+            {
+                var users = await _userService.GetAllUsers();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }        
         }
-        //refactoring
+
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshToken(TokenDto tokenDto)
         {
-            if (tokenDto == null)
+            try
             {
-                return BadRequest("Invalid client request");
+                if (tokenDto == null)
+                {
+                    return BadRequest("Invalid client request");
+                }
+
+                var principal = _tokenService.GetPrincipleFromExpiredToken(tokenDto.AccessToken);
+
+                var user = await _userService.GetUserByUsername(principal.Identity.Name);
+
+                if (user is null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+                {
+                    return BadRequest("Invalid request");
+                }
+
+                var refreshToken = await _tokenService
+                    .CreateRefreshTokenForAuthenticatedUser(user);
+
+                return Ok(refreshToken);
             }
-
-            //refactoring
-            var accessToken = tokenDto.AccessToken;
-            var refreshToken = tokenDto.RefreshToken;
-            var principal = _tokenService.GetPrincipleFromExpiredToken(accessToken);
-            var username = principal.Identity.Name;
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-            //refactoring
-
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            catch (Exception ex)
             {
-                return BadRequest("Invalid request");
-            }
-
-            //refactoring
-            var newAccessToken = _tokenService.CreateJwtToken(user);
-            var newRefreshToken = _tokenService.CreateRefreshToken();
-            user.RefreshToken = newRefreshToken;
-
-            await _context.SaveChangesAsync();
-            //refactoring
-
-            return Ok(new TokenDto
-            {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken
-            });
+                return StatusCode(500, new { ex.Message });
+            }        
         }
-        //refactoring
+
         [HttpPost("send-reset-email/{email}")]
         public async Task<IActionResult> SendEmail(string email)
         {
-            var user = await _userService.GetUserByEmail(email);
-
-            if (user is null)
+            try
             {
-                return NotFound(new
+                var user = await _userService.GetUserByEmail(email);
+
+                if (user is null)
                 {
-                    StatusCode = 404,
-                    Message = "Email doesn't exist!"
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Message = "Email doesn't exist!"
+                    });
+                }
+
+                var emailToken = _tokenService.GenerateRandomToken();
+
+                await _userService.UpdateResetPropertiesByEmailToken(user, emailToken);
+
+                _emailService.SendEmail(email, emailToken);
+
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Email sent!"
                 });
             }
-
-            //refactoring
-            var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var emailToken = Convert.ToBase64String(tokenBytes);
-            user.ResetPasswordToken = emailToken;
-            user.ResetPasswordExpiry = DateTime.Now.AddMinutes(15);
-            var from = _configuration["EmailSettings:From"];
-            var emailModel = new EmailModel(email, "Reset password", EmailBody.EmailStringBody(email, emailToken));
-            _emailService.SendEmail(emailModel);
-
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            //refactoring
-
-            return Ok(new
+            catch (Exception ex)
             {
-                StatusCode = 200,
-                Message = "Email sent!"
-            });
+                return StatusCode(500, new { ex.Message });
+            }        
         }
-        //refactoring
+
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            resetPasswordDto.EmailToken.Replace(" ", "+");
-            var user = await _userService.GetUserByEmail(resetPasswordDto.Email);
-
-            if (user is null)
+            try
             {
-                return NotFound(new
+                resetPasswordDto.EmailToken.Replace(" ", "+");
+                var user = await _userService.GetUserByEmail(resetPasswordDto.Email);
+
+                if (user is null)
                 {
-                    StatusCode = 404,
-                    Message = "User doesn't exist!"
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Message = "User doesn't exist!"
+                    });
+                }
+
+                if (user.ResetPasswordToken != resetPasswordDto.EmailToken || user.ResetPasswordExpiry < DateTime.Now)
+                {
+                    return BadRequest(new
+                    {
+                        StatusCode = 400,
+                        Message = "Invalid reset link!"
+                    });
+                }
+
+                await _userService.SetNewPassword(user, resetPasswordDto.NewPassword);
+
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Password reset successfully!"
                 });
             }
-
-            var tokenCode = user.ResetPasswordToken;
-            var emailTokenExpiry = user.ResetPasswordExpiry;
-
-            if (tokenCode != resetPasswordDto.EmailToken || emailTokenExpiry < DateTime.Now)
+            catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    StatusCode = 400,
-                    Message = "Invalid reset link!"
-                });
-            }
-
-            //refactoring
-            user.PasswordHash = PasswordHasher.HashPassword(resetPasswordDto.NewPassword);
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            //refactoring
-
-            return Ok(new
-            {
-                StatusCode = 200,
-                Message = "Password reset successfully!"
-            });
+                return StatusCode(500, new { ex.Message });
+            }          
         }
     }
 }

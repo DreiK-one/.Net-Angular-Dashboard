@@ -1,12 +1,15 @@
-﻿using Data.Entities;
+﻿using Core.DTOs;
+using Data.Entities;
 using System.Security.Claims;
+
 
 namespace Core.Interfaces
 {
     public interface ITokenService
     {
-        string CreateJwtToken(User user);
-        string CreateRefreshToken();
-        ClaimsPrincipal GetPrincipleFromExpiredToken(string token);
+        Task<TokenDto> CreateTokenForAuthenticatedUser(User user);
+        Task<TokenDto> CreateRefreshTokenForAuthenticatedUser(User user);
+        string GenerateRandomToken();
+        ClaimsPrincipal GetPrincipleFromExpiredToken(string token);     
     }
 }

@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.Helpers;
+using Core.Interfaces;
 using Core.Models;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
@@ -15,10 +16,12 @@ namespace Domain.Services
             _configuration = configuration;
         }
 
-        public void SendEmail(EmailModel emailModel)
+        public void SendEmail(string email, string emailToken)
         {
             try
             {
+                var emailModel = new EmailModel(email, "Reset password", EmailBody.EmailStringBody(email, emailToken));
+
                 var emailMessage = new MimeMessage();
                 var from = _configuration["EmailSettings:From"];
                 emailMessage.From.Add(new MailboxAddress("NetAngularDashboard", from));

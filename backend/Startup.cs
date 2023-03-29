@@ -50,7 +50,6 @@ namespace API
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
-            services.AddScoped<IRoleService, RoleService>();
 
             services.AddAuthentication(x =>
             {

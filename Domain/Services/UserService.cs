@@ -1,4 +1,5 @@
 ﻿using Core.DTOs;
+using Core.Helpers;
 using Core.Interfaces;
 using Data;
 using Data.Entities;
@@ -22,6 +23,26 @@ namespace Domain.Services
             try
             {
                 return await _context.Users.ToListAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<User> GetUserByUsername(string username)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.UserName == username);
+
+                if (user == null)
+                {
+                    throw new NullReferenceException();
+                }
+
+                return user;
             }
             catch (Exception)
             {
@@ -66,24 +87,66 @@ namespace Domain.Services
             }         
         }
 
-        public async Task<int> CreateUser(User user)
+        public async Task<int> CreateUser(RegisterDto registerDto)
         {
             try
             {
-                if (user != null)
-                {
-                    await _context.Users.AddAsync(user);
-                    return await _context.SaveChangesAsync();
-                }
-                else
+                var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == 2);
+                if (role == null)
                 {
                     throw new NullReferenceException();
                 }
+
+                var user = new User
+                {
+                    FirstName = registerDto.FirstName,
+                    LastName = registerDto.LastName,
+                    Email = registerDto.Email,
+                    NormalizedEmail = registerDto.Email.ToUpperInvariant(),
+                    UserName = registerDto.Username,
+                    NormalizedUserName = registerDto.Username.ToUpperInvariant(),
+                    Token = "",
+                    PasswordHash = PasswordHasher.HashPassword(registerDto.Password),
+                    RoleId = role.Id
+                };
+
+                await _context.Users.AddAsync(user);
+                return await _context.SaveChangesAsync();
             }
             catch (Exception)
             {
                 throw;
             }
+        }
+
+        public async Task<int> UpdateResetPropertiesByEmailToken(User user, string emailToken)
+        {
+            try
+            {
+                user.ResetPasswordToken = emailToken;
+                user.ResetPasswordExpiry = DateTime.Now.AddMinutes(15);
+                _context.Entry(user).State = EntityState.Modified;
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }         
+        }
+
+        public async Task<int> SetNewPassword(User user, string password)
+        {
+            try
+            {
+                user.PasswordHash = PasswordHasher.HashPassword(password);
+                _context.Entry(user).State = EntityState.Modified;
+
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }         
         }
 
         public async Task<bool> CheckEmailExists(string email)
@@ -139,6 +202,6 @@ namespace Domain.Services
             {
                 throw;
             } 
-        }
+        } 
     }
 }

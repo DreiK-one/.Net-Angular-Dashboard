@@ -5,6 +5,6 @@ namespace Core.Interfaces
 {
     public interface IEmailService
     {
-        void SendEmail(EmailModel emailModel);
+        void SendEmail(string email, string emailToken);
     }
 }

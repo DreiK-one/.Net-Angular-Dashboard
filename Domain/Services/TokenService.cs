@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Data;
 using Data.Entities;
 using Microsoft.Extensions.Configuration;
@@ -23,43 +24,56 @@ namespace Domain.Services
             _configuration = configuration;
         }
 
-        public string CreateJwtToken(User user)
+        public async Task<TokenDto> CreateTokenForAuthenticatedUser(User user)
         {
-            var jwtTokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
-            var identity = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Role, user.Role.Name),
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
-            });
-            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+            user.Token = CreateJwtToken(user);
+            user.RefreshToken = CreateRefreshToken();
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(1);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+            await _context.SaveChangesAsync();
+
+            var token = new TokenDto
             {
-                Subject = identity,
-                Expires = DateTime.Now.AddMinutes(30),
-                SigningCredentials = credentials
+                AccessToken = user.Token,
+                RefreshToken = user.RefreshToken
             };
 
-            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-
-            return jwtTokenHandler.WriteToken(token);
+            return token;
         }
 
-        public string CreateRefreshToken()
+        public async Task<TokenDto> CreateRefreshTokenForAuthenticatedUser(User user)
         {
-            var tokenBytes = RandomNumberGenerator.GetBytes(64);
-            var refreshToken = Convert.ToBase64String(tokenBytes);
-
-            var tokenInUser = _context.Users
-                .Any(u => u.RefreshToken == refreshToken);
-
-            if (tokenInUser)
+            try
             {
-                return CreateRefreshToken();
-            }
+                user.RefreshToken = CreateRefreshToken();
 
-            return refreshToken;
+                await _context.SaveChangesAsync();
+
+                var refreshToken = new TokenDto
+                {
+                    AccessToken = CreateJwtToken(user),
+                    RefreshToken = user.RefreshToken
+                };
+
+                return refreshToken;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GenerateRandomToken()
+        {
+            try
+            {
+                var tokenBytes = RandomNumberGenerator.GetBytes(64);
+                return Convert.ToBase64String(tokenBytes);
+            }
+            catch (Exception)
+            {
+                throw;
+            }       
         }
 
         public ClaimsPrincipal GetPrincipleFromExpiredToken(string token)
@@ -88,5 +102,45 @@ namespace Domain.Services
 
             return principal;
         }
+
+
+        private string CreateJwtToken(User user)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
+            var identity = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Role, user.Role.Name),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}")
+            });
+            var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = identity,
+                Expires = DateTime.Now.AddMinutes(30),
+                SigningCredentials = credentials
+            };
+
+            var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+
+            return jwtTokenHandler.WriteToken(token);
+        }
+
+        private string CreateRefreshToken()
+        {
+            var tokenBytes = RandomNumberGenerator.GetBytes(64);
+            var refreshToken = Convert.ToBase64String(tokenBytes);
+
+            var tokenInUser = _context.Users
+                .Any(u => u.RefreshToken == refreshToken);
+
+            if (tokenInUser)
+            {
+                return CreateRefreshToken();
+            }
+
+            return refreshToken;
+        }      
     }
 }
