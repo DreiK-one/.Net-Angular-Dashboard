@@ -1,5 +1,4 @@
-﻿using Data;
-using Data.Entities;
+﻿using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,42 +8,46 @@ namespace API.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly ApiContext _context;
+        private readonly ICustomerService _customerService;
 
-        public CustomerController(ApiContext context)
+        public CustomerController(ICustomerService customerService)
         {
-            _context = context;
+            _customerService = customerService;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var data = _context.Customers.OrderBy(c => c.Id);
-
-            return Ok(data);
-        }
-
-        //Get api/customer/4
-        [HttpGet("{id}", Name = "GetCustomer")]
-        public IActionResult Get(int id)
-        {
-            var customer = _context.Customers.Find(id);
-
-            return Ok(customer);
-        }
-
-        [HttpPost]
-        public IActionResult Post([FromBody] Customer customer)
-        {
-            if (customer == null)
+            try
             {
-                return BadRequest();
+                var data = await _customerService.GetCustomers();
+
+                return Ok(data);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }  
+        }
 
-            _context.Customers.Add(customer);
-            _context.SaveChanges();
+        [HttpGet("{id}", Name = "GetCustomer")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                var customer = await _customerService.GetCustomerById(id);
 
-            return CreatedAtRoute("GetCustomer", new {id = customer.Id}, customer);
+                if (customer == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }          
         }
     }
 }

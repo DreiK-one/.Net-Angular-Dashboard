@@ -1,8 +1,5 @@
-﻿using Data;
-using Data.Entities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using API.Controllers.Helpers;
+﻿using Microsoft.AspNetCore.Mvc;
+using Core.Interfaces;
 
 
 namespace API.Controllers
@@ -11,76 +8,100 @@ namespace API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly ApiContext _context;
+        private readonly IOrderService _orderService;
+        private readonly ICustomerService _customerService;
 
-        public OrderController(ApiContext context)
+        public OrderController(IOrderService orderService, 
+            ICustomerService customerService)
         {
-            _context = context;
+            _orderService = orderService;
+            _customerService = customerService;
         }
 
-        //GET api/orders/pageNumber/pageSize
         [HttpGet("{pageIndex:int}/{pageSize:int}")]
-        public IActionResult Get(int pageIndex, int pageSize)
+        public async Task<IActionResult> Get(int pageIndex, int pageSize)
         {
-            var data = _context.Orders.Include(o => o.Customer)
-                .OrderByDescending(c => c.Placed);
-
-            var page = new PaginatedResponse<Order>(data, pageIndex, pageSize);
-
-            var totalCount = data.Count();
-            var totalPages = Math.Ceiling((double)totalCount / pageSize);
-
-            var response = new
+            try
             {
-                Page = page,
-                TotalPages = totalPages
-            };
+                var orders = await _orderService.GetOrdersWithIncludesOrderByPlaced();
 
-            return Ok(response);
+                var response = await _orderService.GetOrdersByPage(orders, pageIndex, pageSize);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
         }
 
         [HttpGet("ByState")]
-        public IActionResult ByState()
+        public async Task<IActionResult> GetByState()
         {
-            var orders = _context.Orders.Include(_o => _o.Customer).ToList();
-
-            var groupedResult = orders.GroupBy(o => o.Customer.State)
-                .ToList()
-                .Select(grp => new
+            try
             {
-                State = grp.Key,
-                Total = grp.Sum(x => x.Total)
-            }).OrderByDescending(res => res.Total)
-            .ToList();
+                var orders = await _orderService.GetOrdersWithIncludes();
 
-            return Ok(groupedResult);
+                var groupedResult = orders.GroupBy(o => o.Customer.State)
+                    .ToList()
+                    .Select(grp => new
+                    {
+                        State = grp.Key,
+                        Total = grp.Sum(x => x.Total)
+                    }).OrderByDescending(res => res.Total)
+                .ToList();
+
+                return Ok(groupedResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }     
         }
 
         [HttpGet("ByCustomer/{number}")]
-        public IActionResult ByCustomer(int number)
+        public async Task<IActionResult> GetByCustomer(int number)
         {
-            var orders = _context.Orders.Include(_o => _o.Customer).ToList();
+            try
+            {
+                var orders = await _orderService.GetOrdersWithIncludes();
 
-            var groupedResult = orders.GroupBy(o => o.Customer.Id)
-                .ToList()
-                .Select(grp => new
-                {
-                    Name = _context.Customers.Find(grp.Key).Name,
-                    Total = grp.Sum(x => x.Total)
-                }).OrderByDescending(res => res.Total)
-                .Take(number)
-                .ToList();
+                var groupedResult = orders.GroupBy(o => o.Customer.Id)
+                    .ToList()
+                    .Select(grp => new
+                    {
+                        Name = _customerService.GetCustomerById(grp.Key).Result.Name,
+                        Total = grp.Sum(x => x.Total)
+                    }).OrderByDescending(res => res.Total)
+                    .Take(number)
+                    .ToList();
 
-            return Ok(groupedResult);
+                return Ok(groupedResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }         
         }
 
         [HttpGet("GetOrder/{id}", Name = "GetOrder")]
-        public IActionResult GetOrder(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var order = _context.Orders.Include(_o => _o.Customer)
-                .First(o => o.Id == id);
+            try
+            {
+                var order = await _orderService.GetOrderById(id);
 
-            return Ok(order);
+                if (order == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(order);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
         }
     }
 }

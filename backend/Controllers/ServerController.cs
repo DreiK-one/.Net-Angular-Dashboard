@@ -1,5 +1,5 @@
 ﻿using API.Controllers.Helpers;
-using Data;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,54 +9,68 @@ namespace API.Controllers
     [ApiController]
     public class ServerController : ControllerBase
     {
-        private readonly ApiContext _context;
+        private readonly IServerService _serverService;
 
-        public ServerController(ApiContext context)
+        public ServerController(IServerService serverService)
         {
-            _context = context;
+            _serverService = serverService;
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var response = _context.Servers.OrderBy(c => c.Id).ToList();
+            try
+            {
+                var servers = await _serverService.GetServers();
 
-            return Ok(response);
+                return Ok(servers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }      
         }
 
         [HttpGet("{id}", Name = "GetServer")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var response = _context.Customers.Find(id);
+            try
+            {
+                var server = await _serverService.GetServerById(id);
 
-            return Ok(response);
+                if (server == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(server);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
-        public IActionResult Message(int id, [FromBody] ServerMessage message)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] ServerMessage message)
         {
-            var server = _context.Servers.Find(id);
-
-            if (server == null)
+            try
             {
-                return NotFound();
+                var server = await _serverService.GetServerById(id);
+
+                if (server == null)
+                {
+                    return NotFound();
+                }
+
+                await _serverService.UpdateServerStatus(server, message.Payload);
+
+                return new NoContentResult();
             }
-
-
-            // Refactor: move into a service
-            if (message.Payload == "activate")
+            catch (Exception ex)
             {
-                server.IsOnline = true;
-            }
-
-            if (message.Payload == "deactivate")
-            {
-                server.IsOnline = false;
-            }
-
-            _context.SaveChanges();
-
-            return new NoContentResult();
+                return StatusCode(500, new { ex.Message });
+            }           
         }
     }
 }
