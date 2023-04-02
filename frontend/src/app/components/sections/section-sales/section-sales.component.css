@@ -1,3 +1,5 @@
 .card-bottom {
-    height: 60vh;
+    max-width: 100%;
+    width: 97%;
+    height: auto;
 }
