@@ -17,5 +17,7 @@
 
         public virtual int RoleId { get; set; }
         public virtual Role Role { get; set; }
+        public virtual IEnumerable<Category> Categories { get; set;}
+        public virtual IEnumerable<Position> Positions { get; set; }
     }
 }

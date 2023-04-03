@@ -12,6 +12,8 @@ namespace Data
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
 
+        //ADD NEW TABLES AND THEN ADD NEW MIGRATIONS !!!
+
         public ApiContext(DbContextOptions<ApiContext> options) : base(options)
         {
 
