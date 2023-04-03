@@ -23,7 +23,12 @@ export const appRoutes: Routes = [
         { path: 'sales', component: SectionSalesComponent, canActivate: [AuthGuard] },
         { path: 'orders', component: SectionOrdersComponent, canActivate: [AuthGuard] },
         { path: 'health', component: SectionHealthComponent, canActivate: [AuthGuard] },
-        { path: 'users', component: SectionUsersComponent, canActivate: [AuthGuard] }
+        { path: 'users', component: SectionUsersComponent, canActivate: [AuthGuard] },
+
+        { path: 'analytics', canActivate: [AuthGuard] },
+        { path: 'category', canActivate: [AuthGuard] },
+        { path: 'order', canActivate: [AuthGuard] },
+        { path: 'position', canActivate: [AuthGuard] },
     ]},
 
     {path: '**', redirectTo: '/sales'}

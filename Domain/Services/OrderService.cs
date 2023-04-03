@@ -49,7 +49,7 @@ namespace Domain.Services
             }
         }
 
-        public async Task<List<Order>> GetOrdersWithIncludesOrderByPlaced()
+        public async Task<List<Order>> GetOrdersWithIncludesOrderedByPlaced()
         {
             try
             {

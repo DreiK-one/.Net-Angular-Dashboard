@@ -18,12 +18,12 @@ export class SalesDataService {
   }
 
   getOrdersByCustomer(n: number) {
-    return this._http.get(BASE_URL + 'order/bycustomer/' + n)
+    return this._http.get(BASE_URL + 'order/by-customer/' + n)
       .pipe(map(res => res || []));
   }
 
   getOrdersByState() {
-    return this._http.get(BASE_URL + 'order/bystate/')
+    return this._http.get(BASE_URL + 'order/by-state/')
       .pipe(map(res => res || []));
   }
 }

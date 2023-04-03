@@ -30,7 +30,7 @@ namespace API.Controllers
             }  
         }
 
-        [HttpGet("{id}", Name = "GetCustomer")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try

@@ -18,12 +18,38 @@ namespace API.Controllers
             _customerService = customerService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create()
+        {
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
+        }
+
         [HttpGet("{pageIndex:int}/{pageSize:int}")]
         public async Task<IActionResult> Get(int pageIndex, int pageSize)
         {
             try
             {
-                var orders = await _orderService.GetOrdersWithIncludesOrderByPlaced();
+                var orders = await _orderService.GetOrdersWithIncludesOrderedByPlaced();
 
                 var response = await _orderService.GetOrdersByPage(orders, pageIndex, pageSize);
 
@@ -35,7 +61,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpGet("ByState")]
+        [HttpGet("by-state")]
         public async Task<IActionResult> GetByState()
         {
             try
@@ -59,7 +85,7 @@ namespace API.Controllers
             }     
         }
 
-        [HttpGet("ByCustomer/{number}")]
+        [HttpGet("by-customer/{number}")]
         public async Task<IActionResult> GetByCustomer(int number)
         {
             try
@@ -84,7 +110,7 @@ namespace API.Controllers
             }         
         }
 
-        [HttpGet("GetOrder/{id}", Name = "GetOrder")]
+        [HttpGet("get-order/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
