@@ -10,7 +10,7 @@ namespace Data.Entities
         public DateTime Placed { get; set; }
         public DateTime? Completed { get; set; }
 
-        public int CustomerId { get; set; }
+        public virtual int CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         public virtual IEnumerable<OrderItem> OrderItems { get; set; }
     }

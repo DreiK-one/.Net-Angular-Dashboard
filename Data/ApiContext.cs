@@ -11,8 +11,9 @@ namespace Data
         public DbSet<Server> Servers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-
-        //ADD NEW TABLES AND THEN ADD NEW MIGRATIONS !!!
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Position> Positions { get; set; }
 
         public ApiContext(DbContextOptions<ApiContext> options) : base(options)
         {
