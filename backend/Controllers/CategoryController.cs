@@ -8,12 +8,21 @@ namespace API.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
+        private readonly ICategoryService _categoryService;
+
+        public CategoryController(ICategoryService categoryService)
+        {
+            _categoryService = categoryService;
+        }
+
         [HttpGet("get-categories")]
         public async Task<IActionResult> Get()
         {
             try
             {
-                throw new NotImplementedException();
+                var categories = _categoryService.GetAllCategories();
+
+                return Ok(categories);
             }
             catch (Exception ex)
             {
@@ -26,7 +35,18 @@ namespace API.Controllers
         {
             try
             {
-                throw new NotImplementedException();
+                var category = await _categoryService.GetCategoryById(id);
+
+                if (category == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Message = "Category with this id doesn't exist!"
+                    });
+                }
+
+                return Ok(category);
             }
             catch (Exception ex)
             {
@@ -39,7 +59,9 @@ namespace API.Controllers
         {
             try
             {
-                throw new NotImplementedException();
+                await _categoryService.DeleteCategory(id);
+
+                return Ok(new { Message = "Category has been deleted!" });
             }
             catch (Exception ex)
             {

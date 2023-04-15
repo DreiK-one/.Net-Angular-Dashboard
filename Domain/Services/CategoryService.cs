@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Data;
 using Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,14 +19,36 @@ namespace Domain.Services
             _context = context; 
         }
 
-        public Task<List<Category>> GetAllCategories()
+        public async Task<List<Category>> GetAllCategories()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var categories = await _context.Categories
+                    .Include(c => c.Positions)
+                    .ToListAsync();
+
+                return categories;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Task<Category> GetCategoryById(int id)
+        public async Task<Category> GetCategoryById(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Categories
+                    .Include(c => c.Positions)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                return category;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<int> CreateCategory(Category category)
@@ -33,9 +56,25 @@ namespace Domain.Services
             throw new NotImplementedException();
         }
 
-        public Task<int> DeleteCategory(int id)
+        public async Task<int> DeleteCategory(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (category == null)
+                {
+                    throw new NullReferenceException();
+                }
+
+                _context.Categories.Remove(category);
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public Task<int> UpdateCategory(Category category)

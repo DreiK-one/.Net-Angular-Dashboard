@@ -64,11 +64,7 @@ namespace API.Controllers
 
                 await _positionService.CreatePosition(positionDto);
 
-                return Ok(new 
-                { 
-                    StatusCode = 201, 
-                    Message = "Position has been created!"
-                });
+                return Ok(new { Message = "Position has been created!" });
             }
             catch (Exception ex)
             {
@@ -83,11 +79,7 @@ namespace API.Controllers
             {
                 await _positionService.DeletePosition(id);
 
-                return Ok(new
-                {
-                    StatusCode = 200,
-                    Message = "Position has been deleted!"
-                });
+                return Ok(new { Message = "Position has been deleted!" });
             }
             catch (Exception ex)
             {
@@ -107,12 +99,7 @@ namespace API.Controllers
 
                 await _positionService.UpdatePosition(positionDto);
 
-                return Ok(new
-                {
-                    StatusCode = 201,
-                    Message = "Position has been updated!"
-                });
-
+                return Ok(new { Message = "Position has been updated!" });
             }
             catch (Exception ex)
             {
