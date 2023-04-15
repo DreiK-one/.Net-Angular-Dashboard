@@ -53,6 +53,8 @@ namespace API
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IServerService, ServerService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPositionService, PositionService>();
 
             services.AddAuthentication(x =>
             {

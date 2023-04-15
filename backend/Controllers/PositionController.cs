@@ -8,12 +8,31 @@ namespace API.Controllers
     [ApiController]
     public class PositionController : ControllerBase
     {
+        private readonly IPositionService _positionService;
+
+        public PositionController(IPositionService positionService)
+        {
+            _positionService = positionService;
+        }
+
         [HttpGet("{categoryId}")]
         public async Task<IActionResult> GetByCategoryId(int categoryId)
         {
             try
             {
-                throw new NotImplementedException();
+                var positions = await _positionService
+                    .GetPositionsByCategoryId(categoryId);
+
+                if (positions == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        Message = "Positions of this category id doesn't exist!"
+                    });
+                }
+
+                return Ok(positions);
             }
             catch (Exception ex)
             {
