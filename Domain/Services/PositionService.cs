@@ -1,12 +1,9 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Data;
 using Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Domain.Services
 {
@@ -36,19 +33,68 @@ namespace Domain.Services
             }
         }
 
-        public Task<int> CreatePosition(Position position)
+        public async Task<int> CreatePosition(PositionDto positionDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (positionDto == null)
+                {
+                    throw new NullReferenceException();
+                }
+
+                var position = new Position
+                {
+                    Name = positionDto.Name,
+                    Cost = positionDto.Cost,
+                    CategoryId = positionDto.CategoryId,
+                    CreatedByUser = positionDto.CreatedByUserId
+                };
+
+                await _context.Positions.AddAsync(position);
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }     
         }
 
-        public Task<int> DeletePosition(int id)
+        public async Task<int> DeletePosition(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var position = await _context.Positions
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (position == null)
+                {
+                    throw new NullReferenceException();
+                }
+
+                _context.Remove(position);
+                return await _context.SaveChangesAsync();  
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public Task<int> UpdatePosition(Position position)
+        public async Task<int> UpdatePosition(PositionDto positionDto)
         {
-            throw new NotImplementedException();
+            if (positionDto == null)
+            {
+                throw new NullReferenceException();
+            }
+
+            var position = new Position
+            {
+                Name = positionDto.Name,
+                Cost = positionDto.Cost
+            };
+
+            _context.Positions.Update(position);
+            return await _context.SaveChangesAsync();
         }
     }
 }

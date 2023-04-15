@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,10 +10,16 @@ namespace API.Controllers
     public class PositionController : ControllerBase
     {
         private readonly IPositionService _positionService;
+        private readonly ITokenService _tokenService;
+        private readonly IUserService _userService;
 
-        public PositionController(IPositionService positionService)
+        public PositionController(IPositionService positionService, 
+            ITokenService tokenService,
+            IUserService userService)
         {
             _positionService = positionService;
+            _tokenService = tokenService;
+            _userService = userService;
         }
 
         [HttpGet("{categoryId}")]
@@ -41,11 +48,27 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromBody] PositionDto positionDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (positionDto == null)
+                {
+                    return BadRequest("Invalid request");
+                }
+
+                var principle = _tokenService.GetPrincipleFromToken(positionDto.UserAccessToken);
+                var user = await _userService.GetUserByUsername(principle.Identity.Name);
+
+                positionDto.CreatedByUserId = user.Id;
+
+                await _positionService.CreatePosition(positionDto);
+
+                return Ok(new 
+                { 
+                    StatusCode = 201, 
+                    Message = "Position has been created!"
+                });
             }
             catch (Exception ex)
             {
@@ -58,7 +81,13 @@ namespace API.Controllers
         {
             try
             {
-                throw new NotImplementedException();
+                await _positionService.DeletePosition(id);
+
+                return Ok(new
+                {
+                    StatusCode = 200,
+                    Message = "Position has been deleted!"
+                });
             }
             catch (Exception ex)
             {
@@ -67,11 +96,23 @@ namespace API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Update([FromBody] PositionDto positionDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (positionDto == null)
+                {
+                    return BadRequest("Invalid request");
+                }
+
+                await _positionService.UpdatePosition(positionDto);
+
+                return Ok(new
+                {
+                    StatusCode = 201,
+                    Message = "Position has been updated!"
+                });
+
             }
             catch (Exception ex)
             {

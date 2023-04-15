@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Core.DTOs;
+using Data.Entities;
 
 
 namespace Core.Interfaces
@@ -6,8 +7,8 @@ namespace Core.Interfaces
     public interface IPositionService
     {
         Task<List<Position>> GetPositionsByCategoryId(int id);
-        Task<int> CreatePosition(Position position);
+        Task<int> CreatePosition(PositionDto positionDto);
         Task<int> DeletePosition(int id);
-        Task<int> UpdatePosition(Position position);
+        Task<int> UpdatePosition(PositionDto positionDto);
     }
 }

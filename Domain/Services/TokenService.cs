@@ -76,7 +76,7 @@ namespace Domain.Services
             }       
         }
 
-        public ClaimsPrincipal GetPrincipleFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipleFromToken(string token)
         {
             var key = Encoding.ASCII.GetBytes(_configuration["SecretKey"]);
             var tokenValidationParameters = new TokenValidationParameters
@@ -90,7 +90,7 @@ namespace Domain.Services
 
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var principle = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
 
             if (jwtSecurityToken == null
@@ -100,7 +100,7 @@ namespace Domain.Services
                 throw new SecurityTokenException("This is invalid token!");
             }
 
-            return principal;
+            return principle;
         }
 
 

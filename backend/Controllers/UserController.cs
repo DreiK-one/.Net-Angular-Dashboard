@@ -119,9 +119,9 @@ namespace API.Controllers
                     return BadRequest("Invalid client request");
                 }
 
-                var principal = _tokenService.GetPrincipleFromExpiredToken(tokenDto.AccessToken);
+                var principle = _tokenService.GetPrincipleFromToken(tokenDto.AccessToken);
 
-                var user = await _userService.GetUserByUsername(principal.Identity.Name);
+                var user = await _userService.GetUserByUsername(principle.Identity.Name);
 
                 if (user is null || user.RefreshToken != tokenDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
                 {
