@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Data;
 using Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,18 @@ namespace Domain.Services
         public Task<int> UpdateCategory(Category category)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<string> AddFile(IFormFile file)
+        {
+            var path = "D:\\" + file.Name;
+
+            using(var fileStream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+
+            return path;
         }
     }
 }
