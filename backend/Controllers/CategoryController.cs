@@ -94,5 +94,28 @@ namespace API.Controllers
                 return StatusCode(500, new { ex.Message });
             }
         }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload([FromBody] IFormFile file)
+        {
+            try
+            {
+                if (file == null)
+                {
+                    return BadRequest(new
+                    {
+                        Message = "No file added"
+                    });
+                }
+
+                var response = await _categoryService.AddFile(file);
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
+        }
     }
 }
