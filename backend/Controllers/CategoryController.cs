@@ -96,7 +96,7 @@ namespace API.Controllers
         }
 
         [HttpPost("upload-file")]
-        public async Task<IActionResult> Upload([FromBody] IFormFile file)
+        public async Task<IActionResult> Upload(IFormFile file)
         {
             try
             {

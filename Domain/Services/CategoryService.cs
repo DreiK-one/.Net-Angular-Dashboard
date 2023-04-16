@@ -85,7 +85,7 @@ namespace Domain.Services
 
         public async Task<string> AddFile(IFormFile file)
         {
-            var path = "D:\\" + file.Name;
+            var path = "D:\\" + file.FileName;
 
             using(var fileStream = new FileStream(path, FileMode.Create))
             {
