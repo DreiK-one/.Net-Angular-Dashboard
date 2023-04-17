@@ -10,7 +10,5 @@ namespace Core.Interfaces
         Task<int> CreateCategory(Category category);
         Task<int> DeleteCategory(int id);
         Task<int> UpdateCategory(Category category);
-
-        Task<string> AddFile(IFormFile file);
     }
 }
