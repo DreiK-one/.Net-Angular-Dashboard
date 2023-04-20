@@ -49,20 +49,22 @@ namespace Domain.Services
             }
         }
 
-        public async Task<Category> CreateCategory(CategoryDto categoryDto, IFormFile file)
+        public async Task<Category> CreateCategory(CategoryDto categoryDto)
         {
             try
             {
-                //if (file != null)
-                //{
-                //    Implement fileService adding file
-                //}
+                string? testPath = null;
+
+                if (categoryDto.file != null)
+                {
+                    testPath = "File is not null";
+                }
 
                 var newCategory = new Category
                 {
                     Name = categoryDto.Name,
                     UserId = categoryDto.UserId,
-                    //ImageSource = file ?? fileService.AddImage() : ""
+                    ImageSource = testPath
                 };
 
                 await _context.Categories.AddAsync(newCategory);
@@ -100,7 +102,7 @@ namespace Domain.Services
             }
         }
 
-        public Task<Category> UpdateCategory(CategoryDto categoryDto, IFormFile file)
+        public Task<Category> UpdateCategory(CategoryDto categoryDto)
         {
             throw new NotImplementedException();
         }

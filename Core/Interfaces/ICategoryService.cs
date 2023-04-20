@@ -8,8 +8,8 @@ namespace Core.Interfaces
     {
         Task<List<Category>> GetAllCategories();
         Task<Category> GetCategoryById(int id);
-        Task<Category> CreateCategory(CategoryDto categoryDto, IFormFile file);
+        Task<Category> CreateCategory(CategoryDto categoryDto);
         Task<int> DeleteCategory(int id);
-        Task<Category> UpdateCategory(CategoryDto categoryDto, IFormFile file);
+        Task<Category> UpdateCategory(CategoryDto categoryDto);
     }
 }

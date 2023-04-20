@@ -77,7 +77,7 @@ namespace API.Controllers
         }
 
         [HttpPost("create-category")]
-        public async Task<IActionResult> Create([FromBody] CategoryDto categoryDto, IFormFile? file)
+        public async Task<IActionResult> Create([FromForm] CategoryDto categoryDto)
         {
             try
             {
@@ -87,12 +87,12 @@ namespace API.Controllers
                 }
 
                 var principle = _tokenService.GetPrincipleFromToken(categoryDto.UserAccessToken);
-                var user = await _userService.GetUserByUsername(principle.Identity.Name);
+                var user = await _userService.GetUserByFirstAndLastName(principle.Identity.Name);
 
                 categoryDto.UserId = user.Id;
 
                 var category = await _categoryService
-                    .CreateCategory(categoryDto, file);
+                    .CreateCategory(categoryDto);
 
                 return Ok(category);
 
