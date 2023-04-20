@@ -1,5 +1,6 @@
-﻿using Data.Entities;
-
+﻿using Core.DTOs;
+using Data.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Core.Interfaces
 {
@@ -7,8 +8,8 @@ namespace Core.Interfaces
     {
         Task<List<Category>> GetAllCategories();
         Task<Category> GetCategoryById(int id);
-        Task<int> CreateCategory(Category category);
+        Task<Category> CreateCategory(CategoryDto categoryDto, IFormFile file);
         Task<int> DeleteCategory(int id);
-        Task<int> UpdateCategory(Category category);
+        Task<Category> UpdateCategory(CategoryDto categoryDto, IFormFile file);
     }
 }
