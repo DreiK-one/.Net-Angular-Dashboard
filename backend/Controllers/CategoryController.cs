@@ -30,7 +30,7 @@ namespace API.Controllers
         {
             try
             {
-                var categories = _categoryService.GetAllCategories();
+                var categories = await _categoryService.GetAllCategories();
 
                 return Ok(categories);
             }
@@ -84,20 +84,15 @@ namespace API.Controllers
         {
             try
             {
-                if (categoryDto == null)
+                if (categoryDto == null || categoryDto?.UserAccessToken == null)
                 {
                     return BadRequest("Invalid request");
                 }
 
-                var principle = _tokenService.GetPrincipleFromToken(categoryDto.UserAccessToken);
-                var user = await _userService.GetUserByFirstAndLastName(principle.Identity.Name);
-
-                categoryDto.UserId = user.Id;
-
-                var rootPath = _appEnvironment.WebRootPath;
+                categoryDto.UserId = await GetUserByClaims(categoryDto.UserAccessToken);
 
                 var category = await _categoryService
-                    .CreateCategory(categoryDto, rootPath);
+                    .CreateCategory(categoryDto, _appEnvironment.WebRootPath);
 
                 return Ok(category);
 
@@ -109,15 +104,40 @@ namespace API.Controllers
         }
 
         [HttpPatch("update/{id}")]
-        public async Task<IActionResult> Update(int id, IFormFile? file)
+        public async Task<IActionResult> Update([FromForm] CategoryDto categoryDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (categoryDto == null || categoryDto?.UserAccessToken == null)
+                {
+                    return BadRequest("Invalid request");
+                }
+
+                categoryDto.UserId = await GetUserByClaims(categoryDto.UserAccessToken);
+
+                var category = await _categoryService
+                    .UpdateCategory(categoryDto, _appEnvironment.WebRootPath);
+
+                return Ok(category);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, new { ex.Message });
+            }
+        }
+
+        private async Task<int> GetUserByClaims(string accessToken)
+        {
+            try
+            {
+                var principle = _tokenService.GetPrincipleFromToken(accessToken);
+                var user = await _userService.GetUserByFirstAndLastName(principle.Identity.Name);
+
+                return user.Id;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }

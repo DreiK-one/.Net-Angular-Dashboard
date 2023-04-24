@@ -65,7 +65,7 @@ namespace Domain.Services
                 var newCategory = new Category
                 {
                     Name = categoryDto.Name,
-                    UserId = categoryDto.UserId,
+                    UserId = Convert.ToInt32(categoryDto.UserId),
                     ImageSource = testPath
                 };
 
@@ -104,9 +104,29 @@ namespace Domain.Services
             }
         }
 
-        public Task<Category> UpdateCategory(CategoryDto categoryDto, string rootPath)
+        public async Task<Category> UpdateCategory(CategoryDto categoryDto, string rootPath)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var category = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.Id == categoryDto.Id);
+
+                if (categoryDto.file != null && categoryDto.ImageSource != category.ImageSource)
+                {
+                    category.ImageSource = await _fileService.AddFile(categoryDto.file, rootPath);
+                }
+
+                category.Name = categoryDto.Name;
+
+                _context.Categories.Update(category);
+                await _context.SaveChangesAsync();
+
+                return category;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
