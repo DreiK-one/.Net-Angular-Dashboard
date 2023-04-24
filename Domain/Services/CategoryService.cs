@@ -1,6 +1,8 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Data;
 using Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -47,9 +49,36 @@ namespace Domain.Services
             }
         }
 
-        public Task<int> CreateCategory(Category category)
+        public async Task<Category> CreateCategory(CategoryDto categoryDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string? testPath = null;
+
+                if (categoryDto.file != null)
+                {
+                    testPath = "File is not null";
+                }
+
+                var newCategory = new Category
+                {
+                    Name = categoryDto.Name,
+                    UserId = categoryDto.UserId,
+                    ImageSource = testPath
+                };
+
+                await _context.Categories.AddAsync(newCategory);
+                await _context.SaveChangesAsync();
+
+                var result = await _context.Categories
+                    .FirstOrDefaultAsync(c => c.Name == categoryDto.Name);
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<int> DeleteCategory(int id)
@@ -73,7 +102,7 @@ namespace Domain.Services
             }
         }
 
-        public Task<int> UpdateCategory(Category category)
+        public Task<Category> UpdateCategory(CategoryDto categoryDto)
         {
             throw new NotImplementedException();
         }

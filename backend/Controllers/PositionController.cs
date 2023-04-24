@@ -58,7 +58,7 @@ namespace API.Controllers
                 }
 
                 var principle = _tokenService.GetPrincipleFromToken(positionDto.UserAccessToken);
-                var user = await _userService.GetUserByUsername(principle.Identity.Name);
+                var user = await _userService.GetUserByFirstAndLastName(principle.Identity.Name);
 
                 positionDto.CreatedByUserId = user.Id;
 

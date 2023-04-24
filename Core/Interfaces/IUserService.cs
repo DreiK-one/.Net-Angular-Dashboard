@@ -10,6 +10,7 @@ namespace Core.Interfaces
         Task<User> GetUserByUsernameWithIncludes(AuthDto authDto);
         Task<User> GetUserByUsername(string username);
         Task<User> GetUserByEmail(string email);
+        Task<User> GetUserByFirstAndLastName(string originalName);
         Task<int> CreateUser(RegisterDto registerDto);
         Task<int> UpdateResetPropertiesByEmailToken(User user, string emailToken);
         Task<int> SetNewPassword(User user, string password);

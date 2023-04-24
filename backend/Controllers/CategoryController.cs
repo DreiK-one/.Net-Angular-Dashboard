@@ -1,4 +1,5 @@
-﻿using Core.Interfaces;
+﻿using Core.DTOs;
+using Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -9,10 +10,16 @@ namespace API.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+        private readonly ITokenService _tokenService;
+        private readonly IUserService _userService;
 
-        public CategoryController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService, 
+            ITokenService tokenService,
+            IUserService userService)
         {
             _categoryService = categoryService;
+            _tokenService = tokenService;
+            _userService = userService;
         }
 
         [HttpGet("get-categories")]
@@ -70,11 +77,25 @@ namespace API.Controllers
         }
 
         [HttpPost("create-category")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromForm] CategoryDto categoryDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (categoryDto == null)
+                {
+                    return BadRequest("Invalid request");
+                }
+
+                var principle = _tokenService.GetPrincipleFromToken(categoryDto.UserAccessToken);
+                var user = await _userService.GetUserByFirstAndLastName(principle.Identity.Name);
+
+                categoryDto.UserId = user.Id;
+
+                var category = await _categoryService
+                    .CreateCategory(categoryDto);
+
+                return Ok(category);
+
             }
             catch (Exception ex)
             {
@@ -83,7 +104,7 @@ namespace API.Controllers
         }
 
         [HttpPatch("update/{id}")]
-        public async Task<IActionResult> Update(int id)
+        public async Task<IActionResult> Update(int id, IFormFile? file)
         {
             try
             {

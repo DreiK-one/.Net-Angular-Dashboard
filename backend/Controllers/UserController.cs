@@ -32,7 +32,6 @@ namespace API.Controllers
                 if (authDto == null)
                 {
                     return BadRequest();
-                    ;
                 }
 
                 var user = await _userService.GetUserByUsernameWithIncludes(authDto);
