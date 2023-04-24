@@ -12,14 +12,17 @@ namespace API.Controllers
         private readonly ICategoryService _categoryService;
         private readonly ITokenService _tokenService;
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _appEnvironment;
 
         public CategoryController(ICategoryService categoryService, 
             ITokenService tokenService,
-            IUserService userService)
+            IUserService userService,
+            IWebHostEnvironment appEnvironment)
         {
             _categoryService = categoryService;
             _tokenService = tokenService;
             _userService = userService;
+            _appEnvironment = appEnvironment;
         }
 
         [HttpGet("get-categories")]
@@ -91,8 +94,10 @@ namespace API.Controllers
 
                 categoryDto.UserId = user.Id;
 
+                var rootPath = _appEnvironment.WebRootPath;
+
                 var category = await _categoryService
-                    .CreateCategory(categoryDto);
+                    .CreateCategory(categoryDto, rootPath);
 
                 return Ok(category);
 

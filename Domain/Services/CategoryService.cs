@@ -2,7 +2,6 @@
 using Core.Interfaces;
 using Data;
 using Data.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,10 +10,13 @@ namespace Domain.Services
     public class CategoryService : ICategoryService
     {
         private readonly ApiContext _context;
+        private readonly IFileService _fileService;
 
-        public CategoryService(ApiContext context)
+        public CategoryService(ApiContext context, 
+            IFileService fileService)
         {
-            _context = context; 
+            _context = context;
+            _fileService = fileService;
         }
 
         public async Task<List<Category>> GetAllCategories()
@@ -49,7 +51,7 @@ namespace Domain.Services
             }
         }
 
-        public async Task<Category> CreateCategory(CategoryDto categoryDto)
+        public async Task<Category> CreateCategory(CategoryDto categoryDto, string rootPath)
         {
             try
             {
@@ -57,7 +59,7 @@ namespace Domain.Services
 
                 if (categoryDto.file != null)
                 {
-                    testPath = "File is not null";
+                    testPath = await _fileService.AddFile(categoryDto.file, rootPath);
                 }
 
                 var newCategory = new Category
@@ -102,7 +104,7 @@ namespace Domain.Services
             }
         }
 
-        public Task<Category> UpdateCategory(CategoryDto categoryDto)
+        public Task<Category> UpdateCategory(CategoryDto categoryDto, string rootPath)
         {
             throw new NotImplementedException();
         }

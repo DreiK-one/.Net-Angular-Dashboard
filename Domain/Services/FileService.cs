@@ -6,9 +6,9 @@ namespace Domain.Services
 {
     public class FileService : IFileService
     {
-        private readonly int _limit = 1024 * 1024 * 5;
+        private const int _limit = 1024 * 1024 * 5;
 
-        public async Task<string> AddFile(IFormFile file)
+        public async Task<string> AddFile(IFormFile file, string rootPath)
         {
             if (FileFilter(file) == false)
             {
@@ -17,9 +17,10 @@ namespace Domain.Services
 
             var date = DateTime.Now.ToString("ddmmyyyy-HHmmss_FFF");
             var fileName = $"{date}-{file.FileName}";
-            var path = "D:\\" + fileName;
 
-            using (var fileStream = new FileStream(path, FileMode.Create))
+            var path = "\\Uploads\\" + fileName;
+
+            using (var fileStream = new FileStream(rootPath + path, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }

@@ -5,6 +5,6 @@ namespace Core.Interfaces
 {
     public interface IFileService
     {
-        Task<string> AddFile(IFormFile file);
+        Task<string> AddFile(IFormFile file, string rootPath);
     }
 }
