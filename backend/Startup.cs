@@ -55,6 +55,7 @@ namespace API
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPositionService, PositionService>();
+            services.AddScoped<IFileService, FileService>();
 
             services.AddAuthentication(x =>
             {
