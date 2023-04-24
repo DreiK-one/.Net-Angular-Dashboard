@@ -10,6 +10,6 @@ namespace Core.Interfaces
         Task<TokenDto> CreateTokenForAuthenticatedUser(User user);
         Task<TokenDto> CreateRefreshTokenForAuthenticatedUser(User user);
         string GenerateRandomToken();
-        ClaimsPrincipal GetPrincipleFromExpiredToken(string token);     
+        ClaimsPrincipal GetPrincipleFromToken(string token);     
     }
 }

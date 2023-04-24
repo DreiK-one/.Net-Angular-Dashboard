@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+using Core.DTOs;
+using Data.Entities;
 
 
 namespace Core.Interfaces
@@ -7,8 +8,8 @@ namespace Core.Interfaces
     {
         Task<List<Category>> GetAllCategories();
         Task<Category> GetCategoryById(int id);
-        Task<int> CreateCategory(Category category);
+        Task<Category> CreateCategory(CategoryDto categoryDto, string rootPath);
         Task<int> DeleteCategory(int id);
-        Task<int> UpdateCategory(Category category);
+        Task<Category> UpdateCategory(CategoryDto categoryDto, string rootPath);
     }
 }

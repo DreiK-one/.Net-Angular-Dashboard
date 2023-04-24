@@ -87,6 +87,22 @@ namespace Domain.Services
             }         
         }
 
+        public async Task<User> GetUserByFirstAndLastName(string originalName)
+        {
+            try
+            {
+                var user = await _context.Users
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(u => (u.FirstName + " " + u.LastName) == originalName);
+
+                return user;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<int> CreateUser(RegisterDto registerDto)
         {
             try
