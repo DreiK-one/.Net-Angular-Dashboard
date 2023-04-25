@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces;
-
+using Microsoft.AspNetCore.Authorization;
+using Core.DTOs;
 
 namespace API.Controllers
 {
@@ -23,7 +24,10 @@ namespace API.Controllers
         {
             try
             {
-                throw new NotImplementedException();
+                var orders = await _orderService
+                    .GetOrdersWithIncludesOrderedByPlaced();
+
+                return Ok(orders);
             }
             catch (Exception ex)
             {
@@ -32,11 +36,18 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromBody]OrderDto orderDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (orderDto == null)
+                {
+                    return BadRequest();
+                }
+
+                var order = await _orderService.CreateOrder(orderDto);
+
+                return Ok(order);
             }
             catch (Exception ex)
             {

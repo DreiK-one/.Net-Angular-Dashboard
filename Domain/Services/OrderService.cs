@@ -66,7 +66,7 @@ namespace Domain.Services
             }
         }
 
-        public async Task<OrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize)
+        public async Task<GetOrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize)
         {
             try
             {
@@ -78,7 +78,7 @@ namespace Domain.Services
                 var page = new PaginatedResponse<Order>(orders, pageIndex, pageSize);
                 var totalPages = Math.Ceiling((double)orders.Count() / pageSize);
 
-                var orderByPage = new OrderDto<PaginatedResponse<Order>>
+                var orderByPage = new GetOrderDto<PaginatedResponse<Order>>
                 {
                     Page = page,
                     TotalPages = totalPages
@@ -90,6 +90,11 @@ namespace Domain.Services
             {
                 throw;
             }
+        }
+
+        public async Task<Order> CreateOrder(OrderDto orderDto)
+        {
+            throw new NotImplementedException();
         }
     }
 }

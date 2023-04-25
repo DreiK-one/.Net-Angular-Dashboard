@@ -1,8 +1,12 @@
-﻿namespace Core.DTOs
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Core.DTOs
 {
-    public class OrderDto<T> where T : class
+    public class OrderDto
     {
-        public T? Page { get; set; }
-        public double TotalPages { get; set; }
     }
 }
