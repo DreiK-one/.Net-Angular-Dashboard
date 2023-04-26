@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Core.DTOs;
 
 namespace API.Controllers
@@ -20,12 +19,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll(int offset, int limit)
         {
             try
             {
                 var orders = await _orderService
-                    .GetOrdersWithIncludesOrderedByPlaced();
+                    .GetAllOrders(offset, limit);
 
                 return Ok(orders);
             }

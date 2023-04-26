@@ -17,6 +17,26 @@ namespace Domain.Services
             _context = context;
         }
 
+        public async Task<List<Order>> GetAllOrders(int offset, int limit)
+        {
+            try
+            {
+                //Add date filter
+
+                var orders = await _context.Orders
+                    .OrderByDescending(o => o.Placed <= DateTime.Now)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToListAsync();
+
+                return orders;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             try
@@ -94,7 +114,24 @@ namespace Domain.Services
 
         public async Task<Order> CreateOrder(OrderDto orderDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = new Order
+                {
+                    Placed = DateTime.Now,
+                    CustomerId = orderDto.CustomerId,
+                    OrderItems = orderDto.OrderItemsDtos as IEnumerable<OrderItem>
+                };
+
+                await _context.Orders.AddAsync(order);
+                await _context.SaveChangesAsync();
+
+                return order;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
