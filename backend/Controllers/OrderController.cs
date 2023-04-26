@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Core.Interfaces;
-
+using Core.DTOs;
 
 namespace API.Controllers
 {
@@ -19,11 +19,14 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll(int offset, int limit)
         {
             try
             {
-                throw new NotImplementedException();
+                var orders = await _orderService
+                    .GetAllOrders(offset, limit);
+
+                return Ok(orders);
             }
             catch (Exception ex)
             {
@@ -32,11 +35,18 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromBody]OrderDto orderDto)
         {
             try
             {
-                throw new NotImplementedException();
+                if (orderDto == null)
+                {
+                    return BadRequest();
+                }
+
+                var order = await _orderService.CreateOrder(orderDto);
+
+                return Ok(order);
             }
             catch (Exception ex)
             {

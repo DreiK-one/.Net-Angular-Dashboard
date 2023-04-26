@@ -7,9 +7,11 @@ namespace Core.Interfaces
 {
     public interface IOrderService
     {
+        Task<List<Order>> GetAllOrders(int offset, int limit);
         Task<List<Order>> GetOrdersWithIncludes();
         Task<List<Order>> GetOrdersWithIncludesOrderedByPlaced();
         Task<Order> GetOrderById(int id);
-        Task<OrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize);
+        Task<GetOrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize);
+        Task<Order> CreateOrder(OrderDto orderDto);
     }
 }

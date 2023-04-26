@@ -1,8 +1,9 @@
 ﻿namespace Core.DTOs
 {
-    public class OrderDto<T> where T : class
+    public class OrderDto
     {
-        public T? Page { get; set; }
-        public double TotalPages { get; set; }
+        public int CustomerId{ get; set; }
+        public List<OrderItemDto> OrderItemsDtos { get; set; }
+
     }
 }

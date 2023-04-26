@@ -17,6 +17,26 @@ namespace Domain.Services
             _context = context;
         }
 
+        public async Task<List<Order>> GetAllOrders(int offset, int limit)
+        {
+            try
+            {
+                //Add date filter
+
+                var orders = await _context.Orders
+                    .OrderByDescending(o => o.Placed <= DateTime.Now)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToListAsync();
+
+                return orders;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<Order> GetOrderById(int id)
         {
             try
@@ -66,7 +86,7 @@ namespace Domain.Services
             }
         }
 
-        public async Task<OrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize)
+        public async Task<GetOrderDto<PaginatedResponse<Order>>> GetOrdersByPage(List<Order>? orders, int pageIndex, int pageSize)
         {
             try
             {
@@ -78,13 +98,35 @@ namespace Domain.Services
                 var page = new PaginatedResponse<Order>(orders, pageIndex, pageSize);
                 var totalPages = Math.Ceiling((double)orders.Count() / pageSize);
 
-                var orderByPage = new OrderDto<PaginatedResponse<Order>>
+                var orderByPage = new GetOrderDto<PaginatedResponse<Order>>
                 {
                     Page = page,
                     TotalPages = totalPages
                 };
 
                 return orderByPage;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Order> CreateOrder(OrderDto orderDto)
+        {
+            try
+            {
+                var order = new Order
+                {
+                    Placed = DateTime.Now,
+                    CustomerId = orderDto.CustomerId,
+                    OrderItems = orderDto.OrderItemsDtos as IEnumerable<OrderItem>
+                };
+
+                await _context.Orders.AddAsync(order);
+                await _context.SaveChangesAsync();
+
+                return order;
             }
             catch (Exception)
             {
